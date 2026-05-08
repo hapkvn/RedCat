@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Cat Coffee Management</title>
+    <!-- Nhúng Tailwind CSS qua CDN để style nhanh -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link  rel="stylesheet" href="assets/css/login.css">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Khu vực Header chung (có thể ẩn/hiện bằng JS tuỳ role) -->
+    <header id="main-header" class="bg-amber-600 text-white p-4 hidden">
+        <h1 class="text-xl font-bold">Red Cat System</h1>
+    </header>
+
+    <!-- Nơi JS sẽ render nội dung các trang (Admin, Customer, Staff...) -->
+    <div id="app" class="p-4 container mx-auto">
+        Đang tải hệ thống...
+    </div>
+
+    <!-- Gọi file app.js dưới dạng module -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

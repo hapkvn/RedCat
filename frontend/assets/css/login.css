@@ -1,0 +1,144 @@
+
+.login-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    /* Ép chiều rộng và chiều cao phủ kín 100% màn hình thiết bị */
+    width: 100vw;
+    height: 100vh;
+
+    /* Canh giữa form */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(135deg, #f5515f 0%, #e53935 100%);
+    font-family: Arial, sans-serif;
+
+    /* Đảm bảo nền đỏ đè lên mọi thứ khác đang có trên trang */
+    z-index: 100;
+}
+
+/* Khung trắng chứa form */
+.login-card {
+    background-color: #ffffff;
+    /* THAY ĐỔI Ở ĐÂY */
+    width: 100%; /* Luôn chiếm 90% màn hình thiết bị */
+    max-width: 400px; /* Nhưng tối đa chỉ nở ra đến 400px (cho Tablet/PC) */
+
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+/* Phần logo và tiêu đề */
+.login-header {
+    margin-bottom: 30px;
+}
+
+.login-header .icon-container {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    background-color: #e53935;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+.login-header h2 {
+    color: #e53935;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Cụm input */
+.form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #e53935;
+}
+
+/* Nút bấm đăng nhập */
+.btn-login {
+    width: 100%;
+    background-color: #ee4d4d;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-login:hover {
+    background-color: #d32f2f;
+}
+
+/* Link quên mật khẩu */
+.forgot-password {
+    display: inline-block;
+    margin-top: 20px;
+    color: #e53935;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+/* --- RESPONSIVE CHO ĐIỆN THOẠI (Mobile) --- */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 30px 20px; /* Thu nhỏ khoảng cách bên trong để form gọn hơn */
+    }
+
+    .login-header h2 {
+        font-size: 20px; /* Chữ tiêu đề nhỏ lại một chút */
+    }
+
+    .login-header .icon-container {
+        width: 50px;
+        height: 50px; /* Thu nhỏ logo lại */
+    }
+}
+
+/* --- RESPONSIVE CHO MÁY TÍNH BẢNG (Tablet) --- */
+@media (min-width: 481px) and (max-width: 768px) {
+    /* Tablet thường đã hiển thị tốt max-width: 400px,
+       nhưng bạn có thể đổi cỡ chữ hoặc bố cục tại đây nếu cần */
+    .login-wrapper {
+        align-items: flex-start; /* Ví dụ: đẩy form lên cao hơn một chút trên tablet */
+        padding-top: 10vh;
+    }
+}
