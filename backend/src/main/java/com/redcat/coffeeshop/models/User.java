@@ -19,7 +19,38 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column(name = "full_name")
+    private String fullName;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean isActive = true;
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
     public void setId(Long id) {
         this.id = id;

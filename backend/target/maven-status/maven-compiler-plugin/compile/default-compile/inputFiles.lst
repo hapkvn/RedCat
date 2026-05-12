@@ -1,0 +1,5 @@
+/home/nemesis/Projects/RedCatCoffee/backend/src/main/java/com/redcat/coffeeshop/services/EmailService.java
+/home/nemesis/Projects/RedCatCoffee/backend/src/main/java/com/redcat/coffeeshop/CoffeeShopApplication.java
+/home/nemesis/Projects/RedCatCoffee/backend/src/main/java/com/redcat/coffeeshop/repositories/UserRepository.java
+/home/nemesis/Projects/RedCatCoffee/backend/src/main/java/com/redcat/coffeeshop/models/User.java
+/home/nemesis/Projects/RedCatCoffee/backend/src/main/java/com/redcat/coffeeshop/controllers/AuthController.java

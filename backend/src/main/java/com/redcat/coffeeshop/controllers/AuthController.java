@@ -42,7 +42,7 @@ public class AuthController {
             }
         }
 
-        // Trả về lỗi 401 nếu sai thông tin
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Sai tài khoản hoặc mật khẩu"));
     }
 }

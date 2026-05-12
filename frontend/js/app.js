@@ -1,6 +1,7 @@
 // Chỉ import duy nhất login.js vì ta đã viết code cho nó
 import { renderLoginView, initLoginEvents } from './views/login.js';
 import { renderForgotPasswordView, initForgotPasswordEvents } from './views/forgotPassword.js';
+import { renderAdminView, initAdminEvents } from './views/admin.js';
 const appDiv = document.getElementById('app');
 
 function router() {
@@ -17,9 +18,31 @@ function router() {
         appDiv.innerHTML = renderForgotPasswordView();
         initForgotPasswordEvents(); // Gọi hàm gắn sự kiện cho các nút Gửi mã/Xác nhận
     }
+
     else if (hash === '#/admin') {
-        // Tạo giao diện tạm thời cho trang Admin
-        appDiv.innerHTML = `<h2 class="text-2xl text-center mt-10">Đây là trang Admin (Sẽ làm sau)</h2>`;
+        const token = localStorage.getItem('jwtToken');
+
+        // Gọi API lấy dữ liệu nhân viên
+        fetch('http://localhost:8080/api/admin/users', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Không thể lấy dữ liệu');
+                return response.json();
+            })
+            .then(data => {
+                // 'data' chính là danh sách nhân viên từ MySQL
+                appDiv.innerHTML = renderAdminView(data);
+                initAdminEvents();
+            })
+            .catch(error => {
+                console.error(error);
+                appDiv.innerHTML = `<h2 class="text-center mt-10 text-red-500">Lỗi khi tải dữ liệu từ máy chủ</h2>`;
+            });
     }
     else {
         appDiv.innerHTML = `<h2 class="text-2xl text-center mt-10">Trang không tồn tại</h2>`;
