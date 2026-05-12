@@ -29,10 +29,20 @@ export function renderForgotPasswordView() {
     }
     // Bước 3: Form đặt lại mật khẩu mới
     else if (currentStep === 3) {
-        formContent = `
-            <button id="btnResetPassword" class="btn-login">Xác nhận</button>
-        `;
-    }
+            formContent = `
+                <div class="form-group">
+                    <label for="newPasswordInput">Nhập mật khẩu mới</label>
+                    <input type="password" id="newPasswordInput" placeholder="Nhập mật khẩu mới..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPasswordInput">Xác nhận mật khẩu</label>
+                    <input type="password" id="confirmPasswordInput" placeholder="Nhập lại mật khẩu..." required>
+                </div>
+
+                <button id="btnResetPassword" class="btn-login">Xác nhận</button>
+            `;
+        }
 
     // Bọc formContent bên trong khung giao diện nền đỏ (tái sử dụng CSS của màn Login)
     return `
