@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
-
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +23,14 @@ public class User {
 
     @Column(name = "phone_number")
     private String phoneNumber;
+    
+    @Column(name = "email", unique = true)
+    private String email;
 
     @Column(nullable = false, columnDefinition = "boolean default true")
     private boolean isActive = true;
 
+    // Getters and Setters
     public void setActive(boolean active) {
         isActive = active;
     }
@@ -43,6 +46,10 @@ public class User {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getFullName() {
         return fullName;
@@ -50,6 +57,10 @@ public class User {
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+    
+    public String getEmail() {
+        return email;
     }
 
     public void setId(Long id) {
@@ -67,6 +78,7 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+    
     public Long getId() {
         return id;
     }
