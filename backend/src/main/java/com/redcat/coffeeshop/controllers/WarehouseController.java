@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -59,6 +61,49 @@ public class WarehouseController {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
+    }
+
+    // 1. API TRANG DASHBOARD (Lấy Top Tồn kho & Cảnh báo sắp hết)
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> getDashboardData() {
+        Map<String, Object> response = new HashMap<>();
+
+        // TODO: Dùng MaterialRepository để SELECT TOP 7 nguyên liệu có giá trị tồn cao nhất
+        // Dưới đây là code map dữ liệu giả lập SQL trả về đúng format Frontend cần:
+        List<Map<String, Object>> topItems = List.of(
+            Map.of("rank", 1, "name", "Cà phê hạt xay", "value", "2.250.000đ", "qty", "15 kg", "percent", 85),
+            Map.of("rank", 2, "name", "Sữa tươi Vinamilk", "value", "560.000đ", "qty", "20 lít", "percent", 25)
+        );
+
+        // TODO: Dùng MaterialRepository để SELECT các nguyên liệu có stock_quantity <= min_stock_level
+        List<Map<String, Object>> lowStock = List.of(
+            Map.of("id", "NL002", "name", "Sữa đặc Ngôi Sao", "category", "Nguyên liệu", "supplier", "Dairy Farm", "current", "4 lon", "min", "5 lon", "need", "21 lon", "price", "20.000đ/lon", "cost", "420.000đ", "percent", 80)
+        );
+
+        response.put("topItemsData", topItems);
+        response.put("lowStockData", lowStock);
+        return ResponseEntity.ok(response);
+    }
+
+    // 2. API TRANG DANH SÁCH NHẬP KHO
+    @GetMapping("/imports")
+    public ResponseEntity<?> getImportOrders() {
+        // TODO: Dùng ImportOrderRepository.findAll() rồi map sang DTO
+        List<Map<String, Object>> imports = List.of(
+            Map.of("id", "PN-219", "date", "07/04/2026", "supplier", "Highland Beans", "items", 2, "total", "3.100.000đ", "status", "Hoàn tất", "statusClass", "text-green-600 bg-green-50"),
+            Map.of("id", "PN-217", "date", "06/04/2026", "supplier", "Tea Craft", "items", 2, "total", "2.450.000đ", "status", "Đang xử lý", "statusClass", "text-orange-500 bg-orange-50")
+        );
+        return ResponseEntity.ok(imports);
+    }
+
+    // 3. API TRANG DANH SÁCH XUẤT KHO
+    @GetMapping("/exports")
+    public ResponseEntity<?> getExportOrders() {
+        // TODO: Dùng ExportOrderRepository.findAll() rồi map sang DTO
+        List<Map<String, Object>> exports = List.of(
+            Map.of("id", "PX-102", "reasonTitle", "Hoàn tất", "reasonSub", "Tự động (POS)", "date", "07/04/2026", "itemsCount", "5 mặt hàng", "total", "520.000đ", "status", "Hoàn tất", "statusClass", "text-green-600 bg-green-50")
+        );
+        return ResponseEntity.ok(exports);
     }
 
     // Class DTO nội bộ để định dạng JSON trả về

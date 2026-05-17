@@ -3,6 +3,10 @@ import { renderLoginView, initLoginEvents } from './views/login.js';
 import { renderForgotPasswordView, initForgotPasswordEvents } from './views/forgotPassword.js';
 import { renderAdminView, initAdminEvents } from './views/admin.js';
 import { renderWarehouseDashboard, renderWarehouseInventory, renderWarehouseLowStock, renderWarehouseExportDetails, renderWarehouseOrders, renderWarehouseImportList, renderWarehouseCreateImport, renderWarehouseExportList, renderWarehouseCreateExport, renderWarehouseMaterials, initWarehouseEvents } from './views/warehouse.js';
+import { renderManagerInventoryView, renderManagerTables, renderManagerOrders, renderManagerRevenue, initManagerEvents } from './views/manager.js';
+import { renderStaffNewOrders, renderStaffProcessingOrders, renderStaffCompletedOrders, initStaffEvents } from './views/staff.js';
+import { renderAccountantIncome, renderAccountantExpense, renderAccountantReport, renderAccountantArchive, initAccountantEvents } from './views/accountant.js';
+import { renderCustomerHome, renderCustomerMenu, renderCustomerCart, renderCustomerCheckout, initCustomerEvents } from './views/customer.js';
 
 const appDiv = document.getElementById('app');
 
@@ -84,6 +88,22 @@ function router() {
                 appDiv.innerHTML = `<h2 class="text-center mt-10 text-red-500">Lỗi mất kết nối với máy chủ Backend</h2>`;
             });
     }
+    else if (hash === '#/warehouse/inventory') {
+        fetch('http://localhost:8080/api/warehouse/dashboard')
+            .then(res => res.json())
+            .then(data => {
+                appDiv.innerHTML = renderWarehouseInventory(data.topItemsData);
+                initWarehouseEvents();
+            });
+    }
+    else if (hash === '#/warehouse/imports/create') {
+        appDiv.innerHTML = renderWarehouseCreateImport();
+        initWarehouseEvents();
+    }
+    else if (hash === '#/warehouse/exports/create') {
+        appDiv.innerHTML = renderWarehouseCreateExport();
+        initWarehouseEvents();
+    }
     else if (hash === '#/admin') {
         const token = localStorage.getItem('jwtToken');
 
@@ -108,6 +128,92 @@ function router() {
                 console.error(error);
                 appDiv.innerHTML = `<h2 class="text-center mt-10 text-red-500">Lỗi khi tải dữ liệu từ máy chủ</h2>`;
             });
+    } else if (hash === '#/manager/inventory') {
+        // Dùng chung API lấy danh sách nguyên liệu của Warehouse
+        fetch('http://localhost:8080/api/warehouse/materials')
+            .then(res => res.json())
+            .then(data => {
+                appDiv.innerHTML = renderManagerInventoryView(data);
+                // Gắn sự kiện (đăng xuất, đóng mở sidebar mobile) nếu có
+                // initManagerEvents();
+            })
+            .catch(e => {
+                console.error(e);
+                appDiv.innerHTML = `<h2 class="text-center mt-10 text-red-500">Lỗi kết nối máy chủ</h2>`;
+            });
+    } else if (hash === '#/manager/tables') {
+        appDiv.innerHTML = renderManagerTables();
+        initManagerEvents();
+    } else if (hash === '#/manager/orders') {
+        appDiv.innerHTML = renderManagerOrders();
+        initManagerEvents();
+    } else if (hash === '#/manager/revenue') {
+        appDiv.innerHTML = renderManagerRevenue();
+        initManagerEvents();
+    } else if (hash === '#/staff/new') {
+        // Lấy danh sách các đơn mới đẩy từ POS xuống hàng chờ
+        fetch('http://localhost:8080/api/warehouse/orders?status=Chờ xử lý')
+            .then(res => res.json())
+            .then(data => {
+                appDiv.innerHTML = renderStaffNewOrders(data);
+                initStaffEvents();
+            }).catch(e => {
+                 appDiv.innerHTML = renderStaffNewOrders();
+                 initStaffEvents();
+            });
+
+    } else if (hash === '#/staff/processing') {
+        // Hàng chờ chế biến
+        fetch('http://localhost:8080/api/warehouse/orders?status=Đang chế biến')
+            .then(res => res.json())
+            .then(data => {
+                appDiv.innerHTML = renderStaffProcessingOrders(data);
+                initStaffEvents();
+            }).catch(e => {
+                appDiv.innerHTML = renderStaffProcessingOrders();
+                initStaffEvents();
+           });
+
+    } else if (hash === '#/staff/completed') {
+        // Lấy lịch sử các đơn đã hoàn thành lưu trong SQL
+        fetch('http://localhost:8080/api/warehouse/orders?status=Hoàn thành')
+            .then(res => res.json())
+            .then(data => {
+                appDiv.innerHTML = renderStaffCompletedOrders(data);
+                initStaffEvents();
+            }).catch(e => {
+                appDiv.innerHTML = renderStaffCompletedOrders();
+                initStaffEvents();
+           });
+    }
+    else if (hash === '#/accountant/income' || hash === '#/accountant') {
+        // Sau này thay dữ liệu cứng bằng fetch API tương tự như làm với warehouse
+        appDiv.innerHTML = renderAccountantIncome();
+        initAccountantEvents();
+    } else if (hash === '#/accountant/expense') {
+        appDiv.innerHTML = renderAccountantExpense();
+        initAccountantEvents();
+    } else if (hash === '#/accountant/report') {
+        appDiv.innerHTML = renderAccountantReport();
+        initAccountantEvents();
+    } else if (hash === '#/accountant/archive') {
+        appDiv.innerHTML = renderAccountantArchive();
+        initAccountantEvents();
+    } else if (hash === '#/customer') {
+        appDiv.innerHTML = renderCustomerHome();
+        initCustomerEvents();
+    } else if (hash === '#/customer/menu/coffee') {
+        appDiv.innerHTML = renderCustomerMenu('coffee');
+        initCustomerEvents();
+    } else if (hash === '#/customer/menu/tea') {
+        appDiv.innerHTML = renderCustomerMenu('tea');
+        initCustomerEvents();
+    } else if (hash === '#/customer/cart') {
+        appDiv.innerHTML = renderCustomerCart();
+        initCustomerEvents();
+    } else if (hash === '#/customer/checkout') {
+        appDiv.innerHTML = renderCustomerCheckout();
+        initCustomerEvents();
     }
     else {
         appDiv.innerHTML = `<h2 class="text-2xl text-center mt-10">Trang không tồn tại</h2>`;

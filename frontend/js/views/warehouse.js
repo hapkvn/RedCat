@@ -31,112 +31,8 @@ const khoIcons = {
     pencil: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`
 };
 
-// ==========================================
-// 2. DỮ LIỆU MẪU CHO TRANG TỒN KHO VÀ SẮP HẾT
-// ==========================================
-const topItemsData = [
-    { rank: 1, name: 'Cà phê hạt xay (Robusta)', value: '2.250.000đ', qty: '15 kg', percent: 85 },
-    { rank: 2, name: 'Trà xanh cao cấp', value: '1.440.000đ', qty: '8 kg', percent: 55 },
-    { rank: 3, name: 'Sữa tươi Vinamilk', value: '560.000đ', qty: '20 lít', percent: 25 },
-    { rank: 4, name: 'Đào hộp', value: '540.000đ', qty: '12 hộp', percent: 24 },
-    { rank: 5, name: 'Ly nhựa T1', value: '400.000đ', qty: '500 cái', percent: 18 },
-    { rank: 6, name: 'Syrup Caramel', value: '250.000đ', qty: '2 chai', percent: 12 },
-    { rank: 7, name: 'Đường kính trắng', value: '240.000đ', qty: '10 kg', percent: 10 },
-];
-
-const lowStockData = [
-    { id: 'NL002', name: 'Sữa đặc Ngôi Sao', category: 'Nguyên liệu', supplier: 'Dairy Farm', current: '4 lon', min: '5 lon', need: '21 lon', price: '20.000đ/lon', cost: '420.000đ', percent: 80 },
-    { id: 'NL003', name: 'Syrup Caramel', category: 'Nguyên liệu', supplier: 'Sweet Oven', current: '2 chai', min: '3 chai', need: '13 chai', price: '125.000đ/chai', cost: '1.625.000đ', percent: 67 },
-    { id: 'NL006', name: 'Bột Cacao', category: 'Nguyên liệu', supplier: 'Đại lý địa phương', current: '1 kg', min: '3 kg', need: '14 kg', price: '80.000đ/kg', cost: '1.120.000đ', percent: 33 },
-];
-
 const alertIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
-
-// --- DỮ LIỆU MẪU CHO TRANG CHI TIẾT TỔNG XUẤT ---
-const exportReasonsData = [
-    { name: 'Tự động (POS)', percent: 33 },
-    { name: 'Sử dụng nội bộ', percent: 7 },
-    { name: 'Xuất hủy (Hết hạn)', percent: 60 }
-];
-
-const exportListMockData = [
-    { id: 'PX-102', reasonTitle: 'Hoàn tất', reasonSub: 'Tự động (POS)', date: '07/04/2026', itemsCount: '5 mặt hàng', total: '520.000đ', status: 'Hoàn tất' },
-    // Có thể copy thêm dòng này để bảng dài ra
-    { id: 'PX-101', reasonTitle: 'Hoàn tất', reasonSub: 'Tự động (POS)', date: '06/04/2026', itemsCount: '12 mặt hàng', total: '1.250.000đ', status: 'Hoàn tất' }
-];
-
-// --- DỮ LIỆU MẪU CHO DANH SÁCH ORDER ---
-const ordersData = [
-    {
-        id: 'Order 1.1', table: 'Bàn 012 – Tầng 1', time: "16'", timeNum: 16, progress: '2/6', progressPercent: 33, server: 'Trần Quang Minh',
-        colorClass: 'bg-[#C62828]', bgClass: 'bg-[#FFCDD2]', barClass: 'bg-[#B71C1C]', dotColor: 'bg-red-500',
-        items: [
-            { name: 'Black Coffee', qty: '3 ly', done: false },
-            { name: 'Trà Xanh Đậu Đỏ', qty: '1 ly', done: false },
-            { name: 'Flat White', qty: '1 ly', done: true },
-            { name: 'Trà Thạch Đào', qty: '3 ly', done: false },
-            { name: 'Phô Mai Trà Xanh', qty: '2 phần', done: true },
-            { name: 'Tiramisu', qty: '1 ly', done: false }
-        ]
-    },
-    {
-        id: 'Order 1.2', table: 'Bàn 008 – Tầng 2', time: "10'", timeNum: 10, progress: '1/3', progressPercent: 33, server: 'Nguyễn Thị Mai',
-        colorClass: 'bg-[#E65100]', bgClass: 'bg-[#FFE0B2]', barClass: 'bg-[#E65100]', dotColor: 'bg-orange-500',
-        items: [
-            { name: 'Cafe Latte', qty: '1 ly', done: false },
-            { name: 'Trà Thạch Đào', qty: '1 ly', done: false },
-            { name: 'Phô Mai Cà Phê', qty: '1 phần', done: true }
-        ]
-    },
-    {
-        id: 'Order 1.3', table: 'Bàn 004 – Tầng 1', time: "1'", timeNum: 1, progress: '2/6', progressPercent: 33, server: 'Lê Quốc Bảo',
-        colorClass: 'bg-[#2E7D32]', bgClass: 'bg-[#C8E6C9]', barClass: 'bg-[#1B5E20]', dotColor: 'bg-green-500',
-        items: [
-            { name: 'Trà Thạch Đào', qty: '1 ly', done: false },
-            { name: 'Black Coffee', qty: '1 ly', done: false },
-            { name: 'Cappuccino', qty: '2 ly', done: true },
-            { name: 'Irish Coffee', qty: '1 ly', done: false },
-            { name: 'Mousse Cacao', qty: '2 phần', done: true },
-            { name: 'Phô Mai Caramel', qty: '1 phần', done: false }
-        ]
-    },
-    {
-        id: 'Order 1.4', table: 'Bàn 015 – Tầng 2', time: "5'", timeNum: 5, progress: '1/3', progressPercent: 33, server: 'Trần Quang Minh',
-        colorClass: 'bg-[#E65100]', bgClass: 'bg-[#FFE0B2]', barClass: 'bg-[#E65100]', dotColor: 'bg-orange-500',
-        items: [
-            { name: 'Bạc Xỉu', qty: '2 ly', done: false },
-            { name: 'Trà Đào', qty: '1 ly', done: true },
-            { name: 'Bánh Tiramisu', qty: '1 phần', done: false }
-        ]
-    }
-];
-
 const checkIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-
-// --- DỮ LIỆU MẪU: TỔNG NHẬP (DANH SÁCH LIST) ---
-const importListData = [
-    { id: 'PN-219', date: '07/04/2026', supplier: 'Highland Beans', items: 2, total: '3.100.000đ', status: 'Hoàn tất', statusClass: 'text-green-600 bg-green-50' },
-    { id: 'PN-218', date: '07/04/2026', supplier: 'Highland Beans', items: 4, total: '4.820.000đ', status: 'Hoàn tất', statusClass: 'text-green-600 bg-green-50' },
-    { id: 'PN-217', date: '06/04/2026', supplier: 'Tea Craft', items: 2, total: '2.450.000đ', status: 'Đang xử lý', statusClass: 'text-orange-500 bg-orange-50' },
-    { id: 'PN-216', date: '05/04/2026', supplier: 'Sweet Oven', items: 4, total: '1.950.000đ', status: 'Hoàn thành', statusClass: 'text-green-600 bg-green-50' },
-    { id: 'PN-215', date: '04/04/2026', supplier: 'Dairy Farm', items: 1, total: '890.000đ', status: 'Chờ duyệt', statusClass: 'text-yellow-600 bg-yellow-50' }
-];
-
-// ==========================================
-// DỮ LIỆU MẪU: DANH SÁCH XUẤT KHO
-// ==========================================
-const exportListNewData = [
-    { id: 'PX-102', reason: 'Hoàn tất', subReason: 'Tự động (POS)', date: '07/04/2026', items: 5, total: '520.000đ', status: 'Hoàn tất', statusClass: 'text-green-600 bg-green-50' },
-    { id: 'PX-101', reason: 'Hoàn tất', subReason: 'Tự động (POS)', date: '07/04/2026', items: 2, total: '190.000đ', status: 'Hoàn tất', statusClass: 'text-green-600 bg-green-50' },
-    { id: 'PX-100', reason: 'Sử dụng nội bộ', subReason: 'Sử dụng nội bộ', date: '07/04/2026', items: 3, total: '150.000đ', status: 'Hoàn tất', statusClass: 'text-green-600 bg-green-50' },
-    { id: 'PX-099', reason: 'Đang xử lý', subReason: 'Tự động (POS)', date: '07/04/2026', items: 3, total: '190.000đ', status: 'Đang xử lý', statusClass: 'text-orange-500 bg-orange-50' },
-    { id: 'PX-095', reason: 'Sử dụng nội bộ', subReason: 'Sử dụng nội bộ', date: '07/04/2026', items: 2, total: '40.000đ', status: 'Đã xuất', statusClass: 'text-green-600 bg-green-50' }
-];
-
-// ==========================================
-// DỮ LIỆU MẪU: DANH SÁCH NGUYÊN LIỆU
-// ==========================================
-
 
 // ==========================================
 // 3. HÀM TẠO LAYOUT CHUNG (SIDEBAR + HEADER)
@@ -398,7 +294,8 @@ function getWarehouseLayout(contentHTML, activeMenu = 'dashboard') {
 // ==========================================
 // 4. TRANG TỔNG QUAN (DASHBOARD) - MOBILE FIRST
 // ==========================================
-function getDashboardContent() {
+function getDashboardContent(topItemsData) {
+    const safeData = topItemsData || [];
     return `
         <div class="max-w-7xl mx-auto">
             
@@ -547,8 +444,9 @@ function getDashboardContent() {
 // ==========================================
 // 5. TRANG CHI TIẾT TỒN KHO (INVENTORY)
 // ==========================================
-function getInventoryContent() {
-    const topItemsHTML = topItemsData.map(item => {
+function getInventoryContent(topItemsData) {
+    const safeData = topItemsData || [];
+    const topItemsHTML = safeData.map(item => {
         const isTop3 = item.rank <= 3;
         const rankBgClass = isTop3 ? 'bg-[#4A2F1D] text-white' : 'bg-[#F6EFE9] text-[#8B6E52]';
         const barColorClass = isTop3 ? 'bg-[#4A2F1D]' : 'bg-[#D4C3B3]';
@@ -666,8 +564,9 @@ function getInventoryContent() {
 }
 
 // --- HÀM TẠO NỘI DUNG TRANG CẢNH BÁO SẮP HẾT ---
-function getLowStockContent() {
-    const listItemsHTML = lowStockData.map(item => `
+function getLowStockContent(lowStockData) {
+    const safeData = lowStockData || [];
+    const listItemsHTML = safeData.map(item => `
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
             <!-- Header Card -->
             <div class="flex justify-between items-start mb-6">
@@ -793,9 +692,11 @@ function getLowStockContent() {
 }
 
 // --- HÀM TẠO NỘI DUNG TRANG CHI TIẾT TỔNG XUẤT ---
-function getExportDetailsContent() {
+function getExportDetailsContent(exportReasonsData, exportListMockData) {
+    const safeReasons = exportReasonsData || [];
+    const safeList = exportListMockData || [];
     // Render thanh lý do xuất
-    const reasonsHTML = exportReasonsData.map(item => `
+    const reasonsHTML = safeReasons.map(item => `
         <div class="mb-4 last:mb-0">
             <div class="flex justify-between items-baseline mb-2">
                 <span class="text-sm font-bold text-gray-900">${item.name}</span>
@@ -808,7 +709,7 @@ function getExportDetailsContent() {
     `).join('');
 
     // Render bảng danh sách phiếu xuất
-    const tableRowsHTML = exportListMockData.map(row => `
+    const tableRowsHTML = safeList.map(row => `
         <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
             <td class="py-4 px-6 font-bold text-gray-900">${row.id}</td>
             <td class="py-4 px-6">
@@ -932,10 +833,12 @@ function getExportDetailsContent() {
 }
 
 // --- HÀM TẠO NỘI DUNG DANH SÁCH ORDER ---
-function getOrderListContent() {
-    const orderCardsHTML = ordersData.map(order => {
+function getOrderListContent(ordersData) {
+    const safeData = ordersData || [];
+    const orderCardsHTML = safeData.map(order => {
         // Render từng món ăn trong order
-        const itemsList = order.items.map(item => {
+        const safeItems = order.items || [];
+        const itemsList = safeItems.map(item => {
             const isDone = item.done;
             const textStyle = isDone ? 'line-through text-gray-400' : 'text-gray-700 font-medium';
             const checkStyle = isDone ? 'bg-green-500 border-green-500' : 'border-gray-300';
@@ -992,7 +895,7 @@ function getOrderListContent() {
     }).join('');
 
     // Thanh Bottom Bar trạng thái các bàn
-    const tableStatusHTML = ordersData.map(order => `
+    const tableStatusHTML = safeData.map(order => `
         <div class="flex items-center gap-2 bg-[#333333] px-3 py-1.5 rounded-lg border border-gray-700">
             <div class="w-2.5 h-2.5 rounded-full ${order.dotColor}"></div>
             <div class="text-xs text-gray-300">
@@ -1059,9 +962,10 @@ function getOrderListContent() {
 // ==========================================
 // TRANG 1: DANH SÁCH NHẬP KHO (LIST)
 // ==========================================
-function getImportListContent() {
+function getImportListContent(importListData) {
+    const safeData = importListData || [];
     // 1. Render Table Rows (Cho Desktop)
-    const tableRows = importListData.map(item => `
+    const tableRows = safeData.map(item => `
         <tr class="border-b border-gray-100 last:border-0 hover:bg-white transition-colors bg-[#FDFCFB]">
             <td class="py-4 px-6 font-bold text-gray-900 rounded-l-2xl">${item.id}<div class="text-[10px] text-gray-400 font-normal mt-0.5">${item.date}</div></td>
             <td class="py-4 px-6 text-sm font-bold text-gray-800">${item.supplier}</td>
@@ -1075,7 +979,7 @@ function getImportListContent() {
     `).join('');
 
     // 2. Render Cards (Cho Mobile)
-    const mobileCards = importListData.map(item => `
+    const mobileCards = safeData.map(item => `
         <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4">
             <div class="flex justify-between items-start mb-4">
                 <div>
@@ -1179,7 +1083,7 @@ function getImportListContent() {
             <div class="md:hidden">
                 <div class="flex justify-between items-center mb-4 px-1">
                     <h2 class="text-xs font-bold text-gray-800">Danh sách nhập kho</h2>
-                    <span class="text-[10px] font-bold text-[#D93843]">4 phiếu</span>
+                    <span class="text-[10px] font-bold text-[#D93843]">${safeData.length} phiếu</span>
                 </div>
                 ${mobileCards}
             </div>
@@ -1313,19 +1217,20 @@ function getCreateImportContent() {
 // ==========================================
 // TRANG 1: DANH SÁCH XUẤT KHO (LIST)
 // ==========================================
-function getExportListNewContent() {
-    const tableRows = exportListNewData.map(item => `
+function getExportListNewContent(exportListNewData) {
+    const safeData = exportListNewData || [];
+    const tableRows = safeData.map(item => `
         <tr class="border-b border-gray-100 last:border-0 hover:bg-white transition-colors bg-[#FDFCFB]">
             <td class="py-4 px-6 rounded-l-2xl">
                 <div class="font-bold text-gray-900">${item.id}</div>
                 <div class="text-[10px] text-gray-400 font-normal mt-0.5">${item.date}</div>
             </td>
             <td class="py-4 px-6">
-                <div class="font-bold text-gray-900 text-sm">${item.reason}</div>
-                <div class="text-[11px] text-gray-400 mt-0.5">${item.subReason}</div>
+                <div class="font-bold text-gray-900 text-sm">${item.reasonTitle || item.reason}</div>
+                <div class="text-[11px] text-gray-400 mt-0.5">${item.reasonSub || item.subReason}</div>
             </td>
             <td class="py-4 px-6 text-sm text-gray-500 font-medium">${item.date}</td>
-            <td class="py-4 px-6 text-sm font-bold text-gray-800">${item.items} mặt hàng</td>
+            <td class="py-4 px-6 text-sm font-bold text-gray-800">${item.itemsCount || item.items}</td>
             <td class="py-4 px-6 text-sm font-extrabold text-[#D93843]">${item.total}</td>
             <td class="py-4 px-6 rounded-r-2xl">
                 <span class="${item.statusClass} px-3 py-1 rounded-full text-xs font-bold border border-current/10">${item.status}</span>
@@ -1537,19 +1442,31 @@ function getCreateExportContent() {
         </div>
     `;
 }
-function getMaterialsContent() {
-    const tableRows = materialsData.map(item => `
+export function renderWarehouseMaterials(materialsData) {
+    const safeData = materialsData || [];
+    const tableRows = safeData.map(item => `
         <tr class="bg-white shadow-sm hover:shadow-md transition-shadow">
             <td class="py-4 px-6 rounded-l-2xl text-gray-500 font-bold text-sm border-b-0">${item.id}</td>
             <td class="py-4 px-6 border-b-0">
                 <div class="font-bold text-gray-900 text-sm">${item.name}</div>
                 <div class="text-[10px] text-gray-400 mt-0.5">${item.supplier}</div>
             </td>
-            ...
+            <td class="py-4 px-6 text-sm text-gray-700 font-medium border-b-0">${item.type}</td>
+            <td class="py-4 px-6 text-sm text-gray-500 font-bold border-b-0">${item.unit}</td>
+            <td class="py-4 px-6 border-b-0">
+                <span class="font-extrabold text-gray-900 text-sm">${item.stock}</span>
+            </td>
+            <td class="py-4 px-6 text-sm text-orange-500 font-bold border-b-0">${item.min}</td>
+            <td class="py-4 px-6 text-sm text-gray-500 font-medium border-b-0">${item.price}</td>
+            <td class="py-4 px-6 text-sm font-extrabold text-[#D93843] border-b-0">${item.value}</td>
+            <td class="py-4 px-6 text-sm text-gray-400 border-b-0">${item.lastImport}</td>
+            <td class="py-4 px-6 rounded-r-2xl border-b-0">
+                <span class="${item.statusClass} px-3 py-1 rounded-full text-xs font-bold">${item.status}</span>
+            </td>
         </tr>
     `).join('');
 
-    return `
+    return getWarehouseLayout(`
         <div class="max-w-[1400px] mx-auto pb-8">
             <!-- Header -->
             <div class="flex justify-between items-center mb-8 pt-2">
@@ -1624,23 +1541,27 @@ function getMaterialsContent() {
                 </table>
             </div>
         </div>
-    `;
+    `, 'materials');
 }
 
 // ==========================================
 // 6. CÁC HÀM XUẤT (EXPORTS) ĐỂ ROUTER GỌI
 // ==========================================
-export function renderWarehouseDashboard() {
-    return getWarehouseLayout(getDashboardContent(), 'dashboard');
-}
 
 export function renderWarehouseInventory() {
-    return getWarehouseLayout(getInventoryContent(), 'inventory');
+    return getWarehouseLayout(getInventoryContent([]), 'inventory');
 }
 
-export function renderWarehouseLowStock() {
-    // Vẫn giữ activeMenu là 'dashboard' để thanh sidebar đánh dấu sáng màu ở Dashboard
-    return getWarehouseLayout(getLowStockContent(), 'dashboard');
+export function renderWarehouseCreateImport() {
+    return getWarehouseLayout(getCreateImportContent(), 'imports');
+}
+
+export function renderWarehouseCreateExport() {
+    return getWarehouseLayout(getCreateExportContent(), 'exports');
+}
+
+export function renderWarehouseExportDetails() {
+    return getWarehouseLayout(getExportDetailsContent([], []), 'exports');
 }
 
 // --- HÀM EXPORT CHO APP.JS ---

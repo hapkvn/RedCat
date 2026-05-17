@@ -67,7 +67,8 @@ export function initLoginEvents() {
                     alert('Đăng nhập thành công với quyền: ' + data.role);
 
                     // Điều hướng tự động dựa trên Role
-                    window.location.hash = data.role === 'ADMIN' ? '#/admin' : '#/staff';
+                    window.location.hash = data.role === 'ADMIN' ? '#/admin' :
+                     '#/staff/new';
                 } else {
                     const errorData = await response.json();
                     alert(errorData.message || 'Sai tên đăng nhập hoặc mật khẩu!');
