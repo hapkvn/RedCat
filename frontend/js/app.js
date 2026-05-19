@@ -3,7 +3,7 @@ import { renderLoginView, initLoginEvents } from './views/login.js';
 import { renderForgotPasswordView, initForgotPasswordEvents } from './views/forgotPassword.js';
 import { renderAdminView, initAdminEvents } from './views/admin.js';
 import { renderWarehouseDashboard, renderWarehouseInventory, renderWarehouseLowStock, renderWarehouseExportDetails, renderWarehouseOrders, renderWarehouseImportList, renderWarehouseCreateImport, renderWarehouseExportList, renderWarehouseCreateExport, renderWarehouseMaterials, initWarehouseEvents } from './views/warehouse.js';
-import { renderManagerInventoryView, renderManagerTables, renderManagerOrders, renderManagerRevenue, initManagerEvents } from './views/manager.js';
+import { renderManagerMenu, renderManagerInventoryView, renderManagerTables, renderManagerOrders, renderManagerRevenue, initManagerEvents } from './views/manager.js';
 import { renderStaffNewOrders, renderStaffProcessingOrders, renderStaffCompletedOrders, initStaffEvents } from './views/staff.js';
 import { renderAccountantIncome, renderAccountantExpense, renderAccountantReport, renderAccountantArchive, initAccountantEvents } from './views/accountant.js';
 import { renderCustomerHome, renderCustomerMenu, renderCustomerCart, renderCustomerCheckout, initCustomerEvents } from './views/customer.js';
@@ -128,7 +128,31 @@ function router() {
                 console.error(error);
                 appDiv.innerHTML = `<h2 class="text-center mt-10 text-red-500">Lỗi khi tải dữ liệu từ máy chủ</h2>`;
             });
-    } else if (hash === '#/manager/inventory') {
+    } else if (hash === '#/manager' || hash === '#/manager/menu') {
+        fetch('http://localhost:8080/api/products')
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                appDiv.innerHTML = renderManagerMenu(data);
+                initManagerEvents();
+            }).catch(e => {
+                console.error("Lỗi tải Menu:", e);
+                const errorHTML = `
+                    <div class="text-center p-8 bg-red-50 rounded-lg">
+                        <h2 class="text-lg font-bold text-red-700">Không thể tải dữ liệu Menu</h2>
+                        <p class="text-red-600 mt-2">Có vẻ như máy chủ Backend chưa được khởi động hoặc đã xảy ra lỗi kết nối.</p>
+                        <p class="text-sm text-gray-500 mt-4">Vui lòng kiểm tra lại ứng dụng Spring Boot và đảm bảo API <code>/api/products</code> đang hoạt động.</p>
+                    </div>
+                `;
+                appDiv.innerHTML = renderManagerMenu([], errorHTML); // Render layout trống với thông báo lỗi
+                initManagerEvents();
+            });
+    }
+    else if (hash === '#/manager/inventory') {
         // Dùng chung API lấy danh sách nguyên liệu của Warehouse
         fetch('http://localhost:8080/api/warehouse/materials')
             .then(res => res.json())

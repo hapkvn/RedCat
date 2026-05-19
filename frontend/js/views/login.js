@@ -67,8 +67,22 @@ export function initLoginEvents() {
                     alert('Đăng nhập thành công với quyền: ' + data.role);
 
                     // Điều hướng tự động dựa trên Role
-                    window.location.hash = data.role === 'ADMIN' ? '#/admin' :
-                     '#/staff/new';
+                    let targetHash = '#/login';
+                    if (data.role === 'ADMIN') {
+                        targetHash = '#/admin';
+                    } else if (data.role === 'MANAGER') {
+                        targetHash = '#/manager/menu';
+                    } else if (data.role === 'WAREHOUSE') {
+                        targetHash = '#/warehouse';
+                    } else if (data.role === 'ACCOUNTANT') {
+                        targetHash = '#/accountant/income';
+                    } else if (data.role === 'STAFF') {
+                        targetHash = '#/staff/new';
+                    } else {
+                        targetHash = '#/staff/new'; // Mặc định nếu role không xác định
+                    }
+
+                    window.location.hash = targetHash;
                 } else {
                     const errorData = await response.json();
                     alert(errorData.message || 'Sai tên đăng nhập hoặc mật khẩu!');

@@ -27,10 +27,21 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(nullable = false, columnDefinition = "boolean default true")
     private boolean isActive = true;
 
     // Getters and Setters
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public void setActive(boolean active) {
         isActive = active;
     }

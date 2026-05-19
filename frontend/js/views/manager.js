@@ -17,7 +17,8 @@ const managerIcons = {
     dollar: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
     cart: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`,
     trendUp: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`,
-    eye: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`
+    eye: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+    image: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`
 };
 
 // Dữ liệu mẫu danh sách Đơn hàng
@@ -103,25 +104,25 @@ function getManagerLayout(contentHTML, activeMenu = 'menu') {
 // ==========================================
 // 4. NỘI DUNG TRANG BÀN & QR
 // ==========================================
-function getTableManagementContent() {
-    const tableRows = tablesData.map(table => `
+function getTableManagementContent(tables = tablesData) {
+    const tableRows = tables.map(table => `
         <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
             <td class="py-4 px-6 font-bold text-gray-900">${table.name}</td>
             <td class="py-4 px-6">
                 <button class="text-blue-500 hover:text-blue-700 text-sm font-medium btn-view-link" data-table="${table.id}">Xem link</button>
             </td>
             <td class="py-4 px-6">
-                <span class="${table.statusClass} px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">${table.status}</span>
+                <span class="${table.status === 'Trống' ? 'bg-green-100 text-green-600' : 'bg-red-50 text-red-500'} px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">${table.status}</span>
             </td>
             <td class="py-4 px-6">
                 <div class="flex gap-2">
                     <button class="btn-view-qr bg-[#2ECA6A] text-white p-2 rounded-lg hover:bg-green-600 shadow-sm transition-colors" data-table="${table.id}" title="Xem QR">
                         ${managerIcons.qr}
                     </button>
-                    <button class="bg-[#4285F4] text-white p-2 rounded-lg hover:bg-blue-600 shadow-sm transition-colors" title="Sửa">
-                        ${managerIcons.edit}
+                    <button class="btn-toggle-status bg-[#4285F4] text-white p-2 rounded-lg hover:bg-blue-600 shadow-sm transition-colors" data-table="${table.id}" title="Chuyển trạng thái">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.6 5.6"/></svg>
                     </button>
-                    <button class="bg-[#EA4335] text-white p-2 rounded-lg hover:bg-red-600 shadow-sm transition-colors" title="Xóa">
+                    <button class="btn-delete-table bg-[#EA4335] text-white p-2 rounded-lg hover:bg-red-600 shadow-sm transition-colors" data-table="${table.id}" title="Xóa">
                         ${managerIcons.trash}
                     </button>
                 </div>
@@ -160,8 +161,8 @@ function getTableManagementContent() {
                 <h2 class="text-xl font-extrabold mb-6 text-gray-900">Thêm bàn mới</h2>
                 <form id="addTableForm">
                     <div class="mb-8">
-                        <label class="block text-[11px] font-bold text-gray-900 mb-2">Số bàn</label>
-                        <input type="number" id="newTableNumber" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-400 outline-none text-sm font-medium text-gray-700" placeholder="Nhập số bàn mới" required>
+                        <label class="block text-[11px] font-bold text-gray-900 mb-2">Số bàn (Để trống sẽ tự động thêm)</label>
+                        <input type="number" id="newTableNumber" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-400 outline-none text-sm font-medium text-gray-700" placeholder="Ví dụ: 5">
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <button type="submit" class="bg-[#EA4335] hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-sm">
@@ -181,8 +182,8 @@ function getTableManagementContent() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EA4335" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                 </div>
                 <div class="flex-1">
-                    <h4 class="text-sm font-bold text-gray-900">Trùng số bàn</h4>
-                    <p class="text-[11px] text-gray-500 mt-1">Bàn số <span id="duplicateTableNum" class="font-bold"></span> đã tồn tại trong hệ thống. Vui lòng chọn số khác.</p>
+                    <h4 class="text-sm font-bold text-gray-900" id="toastTitle">Trùng số bàn</h4>
+                    <p class="text-[11px] text-gray-500 mt-1" id="toastMessage">Bàn số <span id="duplicateTableNum" class="font-bold"></span> đã tồn tại trong hệ thống. Vui lòng chọn số khác.</p>
                 </div>
                 <button id="closeTableToast" class="text-gray-400 hover:text-gray-600">${managerIcons.close}</button>
             </div>
@@ -467,13 +468,111 @@ function getManagerRevenueContent() {
     `;
 }
 
-// Export hàm ra để app.js gọi
+// ==========================================
+// TRANG QUẢN LÝ THỰC ĐƠN (MENU)
+// ==========================================
+function getManagerMenuContent(products) {
+    const productCardsHTML = products.map(p => `
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col relative group">
+            <div class="w-full h-40 bg-gray-100 rounded-lg mb-4 overflow-hidden relative">
+                <img src="${p.imageUrl ? 'http://localhost:8080' + p.imageUrl : 'https://via.placeholder.com/300?text=No+Image'}" alt="${p.name}" class="w-full h-full object-cover">
+            </div>
+
+            <div class="flex-1">
+                <p class="text-xs text-gray-400 mb-1">${p.categoryName || 'Món ăn'}</p>
+                <h3 class="font-bold text-gray-900 mb-1">${p.name}</h3>
+                <p class="text-xs text-gray-500 mb-3 line-clamp-2">${p.description || ''}</p>
+                <p class="font-bold text-[#E33539] text-base">${p.price.toLocaleString('vi-VN')}đ</p>
+            </div>
+
+            <!-- Nút tương tác ẩn hiện khi hover -->
+            <div class="absolute inset-0 bg-white bg-opacity-90 flex flex-col justify-center items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                <button class="btn-edit-product w-3/4 bg-blue-500 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-600 transition-colors flex items-center justify-center gap-2" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-desc="${p.description || ''}" data-cat="${p.categoryId}" data-img="${p.imageUrl || ''}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Chỉnh sửa
+                </button>
+                <button class="btn-delete-product w-3/4 bg-red-500 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-red-600 transition-colors flex items-center justify-center gap-2" data-id="${p.id}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Xóa món
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    return `
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">Quản lý Thực đơn</h1>
+                <button id="btnAddProduct" class="bg-[#16A34A] hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm transition-colors">
+                    ${managerIcons.plus} Thêm món mới
+                </button>
+            </div>
+
+            ${products.length === 0 ?
+                `<div class="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
+                    <p class="text-gray-500 font-medium mb-4">Chưa có món ăn nào trong thực đơn</p>
+                    <button id="btnEmptyAddProduct" class="bg-[#16A34A] hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold inline-flex items-center gap-2 shadow-sm transition-colors">Thêm ngay</button>
+                </div>`
+                :
+                `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">${productCardsHTML}</div>`
+            }
+        </div>
+
+        <!-- Modal Thêm/Sửa Món -->
+        <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+            <div class="bg-white rounded-2xl w-full max-w-lg p-6 mx-4 transform scale-95 transition-transform duration-300" id="productModalContent">
+                <h2 id="productModalTitle" class="text-xl font-bold mb-6 text-gray-900">Thêm món mới</h2>
+                <form id="productForm" class="space-y-4">
+                    <input type="hidden" id="productId">
+
+                    <div class="flex items-center gap-4 mb-4">
+                        <img id="productPreview" src="https://via.placeholder.com/80" alt="Product Preview" class="w-20 h-20 rounded-lg object-cover border border-gray-200">
+                        <div>
+                            <label for="productImageUpload" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors flex items-center gap-2">
+                                ${managerIcons.box} Tải ảnh lên
+                            </label>
+                            <input type="file" id="productImageUpload" class="hidden" accept="image/*">
+                            <input type="hidden" id="productImageUrl">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-800">Tên món <span class="text-red-500">*</span></label>
+                        <input type="text" id="productName" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-red-400 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-800">Giá tiền <span class="text-red-500">*</span></label>
+                        <input type="number" id="productPrice" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-red-400 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-800">Mô tả</label>
+                        <textarea id="productDescription" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-red-400 outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-800">Danh mục <span class="text-red-500">*</span></label>
+                        <select id="productCategory" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-red-400 outline-none bg-white text-gray-700">
+                            <option value="" disabled selected>-- Chọn danh mục --</option>
+                            <option value="1">Cà phê</option>
+                            <option value="2">Trà</option>
+                            <option value="3">Đồ ăn vặt</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mt-8">
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg transition-colors shadow-sm">Lưu món</button>
+                        <button type="button" id="btnCancelProductModal" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 rounded-lg transition-colors">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+}
+
+
 export function renderManagerInventoryView(data) {
     return getManagerLayout(getManagerInventoryContent(data), 'inventory');
 }
 
-export function renderManagerTables() {
-    return getManagerLayout(getTableManagementContent(), 'tables');
+export function renderManagerTables(tables = tablesData) {
+    return getManagerLayout(getTableManagementContent(tables), 'tables');
 }
 
 // Các hàm render
@@ -485,122 +584,171 @@ export function renderManagerRevenue() {
     return getManagerLayout(getManagerRevenueContent(), 'revenue');
 }
 
+export function renderManagerMenu(products = []) {
+    return getManagerLayout(getManagerMenuContent(products), 'menu');
+}
+
 
 export function initManagerEvents() {
-    // ---- LOGIC THÊM BÀN ----
+    // ==========================================
+    // LOGIC CHUNG: ĐÓNG/MỞ MODAL & TOAST
+    // ==========================================
+    const toggleModal = (modal, content, show) => {
+        if (!modal) return;
+        if (show) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                if (content) content.classList.remove('scale-95');
+            }, 10);
+        } else {
+            modal.classList.add('opacity-0');
+            if (content) content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    };
+
+    const showToast = (title, message) => {
+        const errorToast = document.getElementById('errorTableToast');
+        if (!errorToast) return;
+        document.getElementById('toastTitle').textContent = title;
+        document.getElementById('toastMessage').innerHTML = message;
+        errorToast.classList.remove('-translate-y-[150%]', 'opacity-0');
+        setTimeout(() => {
+            errorToast.classList.add('-translate-y-[150%]', 'opacity-0');
+        }, 4000);
+    };
+
+    // Đóng toast
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('#closeTableToast') || e.target.closest('#btnUnderstandToast')) {
+            const errorToast = document.getElementById('errorTableToast');
+            if (errorToast) errorToast.classList.add('-translate-y-[150%]', 'opacity-0');
+        }
+    });
+
+    // ==========================================
+    // LOGIC QUẢN LÝ BÀN & QR
+    // ==========================================
     const addTableModal = document.getElementById('addTableModal');
     const addTableContent = document.getElementById('addTableContent');
     const addTableForm = document.getElementById('addTableForm');
 
-    const errorToast = document.getElementById('errorTableToast');
-    let toastTimeout;
-
-    // Mở popup Thêm
+    // Mở popup Thêm Bàn
     document.addEventListener('click', (e) => {
         if (e.target.closest('#btnOpenAddTable')) {
-            addTableModal.classList.remove('hidden');
-            setTimeout(() => {
-                addTableModal.classList.remove('opacity-0');
-                addTableContent.classList.remove('scale-95');
-            }, 10);
+            toggleModal(addTableModal, addTableContent, true);
         }
     });
 
-    // Đóng popup Thêm
-    const closeAddModal = () => {
-        addTableModal.classList.add('opacity-0');
-        addTableContent.classList.add('scale-95');
-        setTimeout(() => addTableModal.classList.add('hidden'), 300);
-    };
+    // Đóng popup Thêm Bàn
     const btnCancelAddTable = document.getElementById('btnCancelAddTable');
-    if (btnCancelAddTable) btnCancelAddTable.addEventListener('click', closeAddModal);
-
-    // Báo lỗi trùng lặp (Toast)
-    const showDuplicateToast = (num) => {
-        document.getElementById('duplicateTableNum').textContent = num;
-        errorToast.classList.remove('-translate-y-[150%]', 'opacity-0');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(hideToast, 4000);
-    };
-    const hideToast = () => errorToast.classList.add('-translate-y-[150%]', 'opacity-0');
-
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('#closeTableToast') || e.target.closest('#btnUnderstandToast')) {
-            hideToast();
-        }
-    });
+    if (btnCancelAddTable) {
+        btnCancelAddTable.addEventListener('click', () => {
+            toggleModal(addTableModal, addTableContent, false);
+            if(addTableForm) addTableForm.reset();
+        });
+    }
 
     // Xử lý Submit form thêm bàn mới
     if (addTableForm) {
-        addTableForm.addEventListener('submit', (e) => {
+        addTableForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const newNum = parseInt(document.getElementById('newTableNumber').value);
+            const numInput = document.getElementById('newTableNumber').value;
 
-            // Check trùng
-            const isDuplicate = tablesData.some(t => t.id === newNum);
-            if (isDuplicate) {
-                showDuplicateToast(newNum);
-            } else {
-                // Thêm vào data giả lập (Trạng thái mặc định là Trống)
-                tablesData.push({
-                    id: newNum,
-                    name: `Bàn ${newNum}`,
-                    status: 'Trống',
-                    statusClass: 'bg-green-100 text-green-600'
+            // Xây dựng payload, nếu không có numInput, Backend sẽ tự xử lý
+            let payload = {};
+            if (numInput) {
+                 payload.name = `Bàn ${numInput}`;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/api/tables', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
-                // Alert thành công & Tải lại trang để hiện bàn mới (Trong thực tế là gọi API lưu SQL)
-                alert(`Đã thêm Bàn ${newNum} thành công! Mã QR đã tự động được tạo.`);
-                closeAddModal();
-                // Rerender trang thay vì reload (để thấy thay đổi tạm thời nếu dùng data giả)
-                const appDiv = document.getElementById('app');
-                if (appDiv) {
-                    appDiv.innerHTML = renderManagerTables();
-                    initManagerEvents();
+                if (response.ok) {
+                    alert("Đã thêm bàn thành công!");
+                    toggleModal(addTableModal, addTableContent, false);
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    showToast('Lỗi thêm bàn', error.message || 'Có lỗi xảy ra');
                 }
+            } catch (error) {
+                console.error("Lỗi:", error);
+                alert("Không thể kết nối đến server");
             }
         });
     }
 
-    // ---- LOGIC HIỂN THỊ MÃ QR ----
-    const qrModal = document.getElementById('qrModal');
-    const qrContent = document.getElementById('qrContent');
-    const qrImage = document.getElementById('qrImage');
-    const qrModalTitle = document.getElementById('qrModalTitle');
-
-    const openQrModal = (tableId) => {
-        // TỰ ĐỘNG TẠO QR: Tạo chuỗi URL chứa ID bàn
-        const tableUrl = `${orderDomain}${tableId}`;
-
-        // Gọi API miễn phí để vẽ URL thành hình ảnh QR
-        // Hàm encodeURIComponent giúp url không bị lỗi ký tự đặc biệt
-        qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tableUrl)}`;
-
-        qrModalTitle.textContent = `QR Bàn ${tableId}`;
-
-        qrModal.classList.remove('hidden');
-        setTimeout(() => {
-            qrModal.classList.remove('opacity-0');
-            qrContent.classList.remove('scale-95');
-        }, 10);
-    };
-
-    const closeQrModal = () => {
-        qrModal.classList.add('opacity-0');
-        qrContent.classList.add('scale-95');
-        setTimeout(() => qrModal.classList.add('hidden'), 300);
-    };
-
-    // Bắt sự kiện khi click vào nút màu xanh "Xem QR" hoặc "Xem link"
-    document.addEventListener('click', (e) => {
-        const btnQr = e.target.closest('.btn-view-qr') || e.target.closest('.btn-view-link');
-        if (btnQr) {
-            const tableId = btnQr.getAttribute('data-table');
-            openQrModal(tableId);
+    // Sự kiện Xóa Bàn và Cập nhật trạng thái bàn sử dụng Event Delegation
+    document.addEventListener('click', async (e) => {
+        // Xóa Bàn
+        const btnDeleteTable = e.target.closest('.btn-delete-table');
+        if (btnDeleteTable) {
+            const tableId = btnDeleteTable.getAttribute('data-table');
+            if (confirm("Bạn có chắc chắn muốn xóa bàn này? Hệ thống sẽ tự động điều chỉnh lại số thứ tự bàn để không bị trống.")) {
+                try {
+                    const response = await fetch(`http://localhost:8080/api/tables/${tableId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        alert("Đã xóa bàn thành công!");
+                        window.location.reload();
+                    } else {
+                        alert("Lỗi khi xóa bàn.");
+                    }
+                } catch (error) {
+                    console.error("Lỗi:", error);
+                }
+            }
+            return; // Tránh chạy tiếp code bên dưới
         }
 
+        // Cập nhật trạng thái Bàn
+        const btnToggleStatus = e.target.closest('.btn-toggle-status');
+        if (btnToggleStatus) {
+            const tableId = btnToggleStatus.getAttribute('data-table');
+            try {
+                const response = await fetch(`http://localhost:8080/api/tables/${tableId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({}) // Gửi body rỗng để backend tự toggle
+                });
+                if (response.ok) {
+                    window.location.reload(); // Tải lại để cập nhật UI
+                } else {
+                    alert("Lỗi khi cập nhật trạng thái.");
+                }
+            } catch (error) {
+                console.error("Lỗi:", error);
+            }
+            return;
+        }
+
+        // Xem QR Code Bàn
+        const btnViewQr = e.target.closest('.btn-view-qr') || e.target.closest('.btn-view-link');
+        if (btnViewQr) {
+            const qrModal = document.getElementById('qrModal');
+            const qrContent = document.getElementById('qrContent');
+            const qrImage = document.getElementById('qrImage');
+            const qrModalTitle = document.getElementById('qrModalTitle');
+
+            const tableId = btnViewQr.getAttribute('data-table');
+            const tableUrl = `${orderDomain}${tableId}`;
+
+            if(qrImage) qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tableUrl)}`;
+            if(qrModalTitle) qrModalTitle.textContent = `QR Bàn ${tableId}`;
+
+            toggleModal(qrModal, qrContent, true);
+        }
+
+        // Đóng modal QR
         if (e.target.closest('#btnCloseQr')) {
-            closeQrModal();
+            toggleModal(document.getElementById('qrModal'), document.getElementById('qrContent'), false);
         }
     });
 
@@ -609,44 +757,217 @@ export function initManagerEvents() {
     // ==========================================
     const detailModal = document.getElementById('orderDetailModal');
     const detailContent = document.getElementById('orderDetailContent');
-    const btnClose = document.getElementById('btnCloseOrderDetail');
 
-    // Ủy quyền sự kiện click cho nút "Xem"
+    // Ủy quyền sự kiện click cho nút "Xem" Đơn hàng
     document.addEventListener('click', (e) => {
-        const btnView = e.target.closest('.btn-view-order');
-        if (btnView && detailModal) {
-            const orderId = btnView.getAttribute('data-id');
-            // Tìm order trong data mẫu
+        const btnViewOrder = e.target.closest('.btn-view-order');
+        if (btnViewOrder && detailModal) {
+            const orderId = btnViewOrder.getAttribute('data-id');
             const order = ordersMockData.find(o => o.id === orderId);
 
             if (order) {
-                // Đổ dữ liệu vào Modal
                 document.getElementById('modalOrderId').textContent = order.id;
                 document.getElementById('modalOrderTable').textContent = order.table.replace('Bàn ', '');
                 document.getElementById('modalOrderStatus').textContent = order.status;
                 document.getElementById('modalOrderTime').textContent = order.time;
                 document.getElementById('modalOrderTotal').textContent = order.total;
 
-                // Render danh sách món ăn
                 const itemsHtml = order.items.map(i => `<li class="flex justify-between"><span>${i.name}</span> <span class="text-gray-900">x${i.qty}</span></li>`).join('');
                 document.getElementById('modalOrderItems').innerHTML = itemsHtml;
 
-                // Hiển thị
-                detailModal.classList.remove('hidden');
-                setTimeout(() => {
-                    detailModal.classList.remove('opacity-0');
-                    detailContent.classList.remove('scale-95');
-                }, 10);
+                toggleModal(detailModal, detailContent, true);
             }
+        }
+
+        // Đóng modal chi tiết đơn
+        if (e.target.closest('#btnCloseOrderDetail')) {
+            toggleModal(detailModal, detailContent, false);
         }
     });
 
-    const closeModal = () => {
-        if (!detailModal) return;
-        detailModal.classList.add('opacity-0');
-        if (detailContent) detailContent.classList.add('scale-95');
-        setTimeout(() => detailModal.classList.add('hidden'), 300);
+
+    // ==========================================
+    // LOGIC TRANG QUẢN LÝ THỰC ĐƠN (MENU)
+    // ==========================================
+    const productModal = document.getElementById('productModal');
+    const productModalContent = document.getElementById('productModalContent');
+    const productForm = document.getElementById('productForm');
+    const productImageUpload = document.getElementById('productImageUpload');
+    const productPreview = document.getElementById('productPreview');
+    const productImageUrlInput = document.getElementById('productImageUrl');
+
+    // Hàm Mở Modal Thêm/Sửa Món
+    const openProductModal = (isEdit = false, pData = {}) => {
+        if (!productModal) return;
+
+        document.getElementById('productModalTitle').textContent = isEdit ? 'Sửa món ăn' : 'Thêm món mới';
+
+        if (isEdit) {
+            document.getElementById('productId').value = pData.id || '';
+            document.getElementById('productName').value = pData.name || '';
+            document.getElementById('productPrice').value = pData.price || '';
+            document.getElementById('productDescription').value = pData.desc || '';
+
+            // Set danh mục
+            const catSelect = document.getElementById('productCategory');
+            if (catSelect && pData.cat) {
+                Array.from(catSelect.options).forEach(opt => {
+                    if (opt.value === pData.cat) opt.selected = true;
+                });
+            }
+
+            // Set ảnh
+            if (pData.img) {
+                productPreview.src = 'http://localhost:8080' + pData.img;
+                productImageUrlInput.value = pData.img;
+            } else {
+                productPreview.src = 'https://via.placeholder.com/80';
+                productImageUrlInput.value = '';
+            }
+
+        } else {
+            productForm.reset();
+            document.getElementById('productId').value = '';
+            productPreview.src = 'https://via.placeholder.com/80';
+            productImageUrlInput.value = '';
+        }
+
+        toggleModal(productModal, productModalContent, true);
     };
 
-    if (btnClose) btnClose.addEventListener('click', closeModal);
+    // Lắng nghe sự kiện bật các modal của Menu
+    document.addEventListener('click', (e) => {
+        // Nút Thêm Món
+        if (e.target.closest('#btnAddProduct') || e.target.closest('#btnEmptyAddProduct')) {
+            openProductModal(false);
+        }
+
+        // Nút Sửa Món
+        const btnEditProduct = e.target.closest('.btn-edit-product');
+        if (btnEditProduct) {
+            const pData = {
+                id: btnEditProduct.getAttribute('data-id'),
+                name: btnEditProduct.getAttribute('data-name'),
+                price: btnEditProduct.getAttribute('data-price'),
+                desc: btnEditProduct.getAttribute('data-desc'),
+                cat: btnEditProduct.getAttribute('data-cat'),
+                img: btnEditProduct.getAttribute('data-img')
+            };
+            openProductModal(true, pData);
+        }
+
+        // Nút Đóng Modal Thêm/Sửa Món
+        if (e.target.closest('#btnCancelProductModal')) {
+            toggleModal(productModal, productModalContent, false);
+        }
+    });
+
+    // --- Upload Ảnh Sản Phẩm ---
+    if (productImageUpload) {
+        // Hủy event listener cũ nếu có để tránh gọi 2 lần
+        const oldUploadClone = productImageUpload.cloneNode(true);
+        productImageUpload.parentNode.replaceChild(oldUploadClone, productImageUpload);
+
+        oldUploadClone.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Preview local
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                document.getElementById('productPreview').src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Fetch upload
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('http://localhost:8080/api/upload/products', {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('productImageUrl').value = data.imageUrl;
+                } else {
+                    alert('Lỗi tải ảnh lên máy chủ');
+                }
+            } catch (error) {
+                console.error('Lỗi upload ảnh:', error);
+                alert('Không thể kết nối đến máy chủ lưu trữ ảnh.');
+            }
+        });
+    }
+
+    // --- Submit Form Thêm/Sửa Sản Phẩm ---
+    if (productForm) {
+        const oldFormClone = productForm.cloneNode(true);
+        productForm.parentNode.replaceChild(oldFormClone, productForm);
+
+        oldFormClone.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const productId = document.getElementById('productId').value;
+            const productName = document.getElementById('productName').value.trim();
+            const productPrice = parseFloat(document.getElementById('productPrice').value);
+            const productDescription = document.getElementById('productDescription').value.trim();
+            const productCategory = document.getElementById('productCategory').value;
+            const productImageUrl = document.getElementById('productImageUrl').value;
+
+            const productPayload = {
+                name: productName,
+                price: productPrice,
+                description: productDescription,
+                category: { id: productCategory },
+                imageUrl: productImageUrl
+            };
+
+            const method = productId ? 'PUT' : 'POST';
+            const url = productId ? `http://localhost:8080/api/products/${productId}` : 'http://localhost:8080/api/products';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(productPayload)
+                });
+
+                if (response.ok) {
+                    alert(`Đã ${productId ? 'cập nhật' : 'thêm'} món ăn thành công!`);
+                    toggleModal(document.getElementById('productModal'), document.getElementById('productModalContent'), false);
+                    window.location.reload();
+                } else {
+                    alert(`Lỗi khi ${productId ? 'cập nhật' : 'thêm'} món ăn.`);
+                }
+            } catch (error) {
+                console.error('Lỗi API:', error);
+                alert('Không thể kết nối đến máy chủ.');
+            }
+        });
+    }
+
+    // --- Xóa Sản Phẩm ---
+    document.addEventListener('click', async (e) => {
+        const btnDeleteProduct = e.target.closest('.btn-delete-product');
+        if (btnDeleteProduct) {
+            const productId = btnDeleteProduct.getAttribute('data-id');
+            if (confirm('Bạn có chắc chắn muốn xóa món ăn này khỏi hệ thống?')) {
+                try {
+                    const response = await fetch(`http://localhost:8080/api/products/${productId}`, {
+                        method: 'DELETE',
+                    });
+                    if (response.ok) {
+                        alert('Đã xóa món ăn thành công!');
+                        window.location.reload();
+                    } else {
+                        alert('Lỗi khi xóa món ăn.');
+                    }
+                } catch (error) {
+                    console.error('Lỗi API:', error);
+                    alert('Không thể kết nối đến máy chủ.');
+                }
+            }
+        }
+    });
 }

@@ -56,6 +56,7 @@ public class AdminController {
         if (updatedData.getFullName() != null) existingUser.setFullName(updatedData.getFullName());
         if (updatedData.getRole() != null) existingUser.setRole(updatedData.getRole());
         if (updatedData.getPhoneNumber() != null) existingUser.setPhoneNumber(updatedData.getPhoneNumber());
+        if (updatedData.getImageUrl() != null) existingUser.setImageUrl(updatedData.getImageUrl()); // Cập nhật imageUrl
 
         // Nếu có gửi mật khẩu mới và mật khẩu không rỗng
         if (updatedData.getPassword() != null && !updatedData.getPassword().trim().isEmpty()) {

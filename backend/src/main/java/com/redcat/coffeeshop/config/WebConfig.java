@@ -16,12 +16,15 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*");
     }
 
-    // THÊM ĐOẠN NÀY ĐỂ CHO PHÉP ĐỌC ẢNH TỪ THƯ MỤC BÊN NGOÀI
+    // Cấu hình để Spring Boot phục vụ file tĩnh từ thư mục uploads/ (ngang hàng với project root)
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Mọi yêu cầu web có dạng http://localhost:8080/uploads/anh-cafe.jpg
-        // Sẽ được Spring Boot tìm kiếm trong thư mục "uploads" ở ngay thư mục chạy project
+        // Ánh xạ link web /uploads/** vào thư mục uploads/ nằm ngang hàng với thư mục backend
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
+                .addResourceLocations("file:./uploads/");
+        
+        // Giữ lại cấu hình cho assets nếu frontend vẫn cần truy cập trực tiếp
+        registry.addResourceHandler("/assets/**")
+                .addResourceLocations("file:../frontend/assets/");
     }
 }
