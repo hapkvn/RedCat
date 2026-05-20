@@ -166,15 +166,28 @@ function router() {
                 appDiv.innerHTML = `<h2 class="text-center mt-10 text-red-500">Lỗi kết nối máy chủ</h2>`;
             });
     } else if (hash === '#/manager/tables') {
-        appDiv.innerHTML = renderManagerTables();
-        initManagerEvents();
+        fetch('http://localhost:8080/api/tables')
+            .then(res => {
+                if(!res.ok) throw new Error("Lỗi khi tải danh sách bàn");
+                return res.json();
+            })
+            .then(data => {
+                 appDiv.innerHTML = renderManagerTables(data);
+                 initManagerEvents();
+            })
+            .catch(e => {
+                console.error(e);
+                 // Fallback: Nếu backend lỗi thì dùng dữ liệu mẫu
+                appDiv.innerHTML = renderManagerTables();
+                initManagerEvents();
+            });
     } else if (hash === '#/manager/orders') {
         appDiv.innerHTML = renderManagerOrders();
         initManagerEvents();
     } else if (hash === '#/manager/revenue') {
         appDiv.innerHTML = renderManagerRevenue();
         initManagerEvents();
-    } else if (hash === '#/staff/new') {
+    } else if (hash === '#/staff/new' || hash === '#/staff') {
         // Lấy danh sách các đơn mới đẩy từ POS xuống hàng chờ
         fetch('http://localhost:8080/api/warehouse/orders?status=Chờ xử lý')
             .then(res => res.json())
@@ -226,12 +239,18 @@ function router() {
     } else if (hash === '#/customer') {
         appDiv.innerHTML = renderCustomerHome();
         initCustomerEvents();
-    } else if (hash === '#/customer/menu/coffee') {
-        appDiv.innerHTML = renderCustomerMenu('coffee');
-        initCustomerEvents();
-    } else if (hash === '#/customer/menu/tea') {
-        appDiv.innerHTML = renderCustomerMenu('tea');
-        initCustomerEvents();
+    } else if (hash.startsWith('#/customer/menu/')) {
+        const categoryId = hash.split('/')[3];
+        fetch(`http://localhost:8080/api/products?categoryId=${categoryId}`)
+            .then(res => res.json())
+            .then(data => {
+                appDiv.innerHTML = renderCustomerMenu(data, categoryId);
+                initCustomerEvents();
+            }).catch(e => {
+                console.error(`Lỗi tải menu cho category ${categoryId}:`, e);
+                appDiv.innerHTML = renderCustomerMenu([], categoryId);
+                initCustomerEvents();
+            });
     } else if (hash === '#/customer/cart') {
         appDiv.innerHTML = renderCustomerCart();
         initCustomerEvents();

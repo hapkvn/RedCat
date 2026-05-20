@@ -17,8 +17,7 @@ const managerIcons = {
     dollar: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`,
     cart: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`,
     trendUp: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`,
-    eye: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
-    image: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`
+    eye: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`
 };
 
 // Dữ liệu mẫu danh sách Đơn hàng
@@ -33,7 +32,7 @@ const ordersMockData = [
 // 2. DỮ LIỆU MẪU: DANH SÁCH BÀN
 // ==========================================
 // Domain giả định dùng để tạo QR code đặt hàng cho từng bàn
-const orderDomain = "https://redcatcoffee.com/order?table=";
+const orderDomain = "http://172.24.50.43:5500/order?table=";
 
 let tablesData = [
     { id: 1, name: 'Bàn 1', status: 'Trống', statusClass: 'bg-green-100 text-green-600' },
@@ -109,14 +108,14 @@ function getTableManagementContent(tables = tablesData) {
         <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
             <td class="py-4 px-6 font-bold text-gray-900">${table.name}</td>
             <td class="py-4 px-6">
-                <button class="text-blue-500 hover:text-blue-700 text-sm font-medium btn-view-link" data-table="${table.id}">Xem link</button>
+                <button class="text-blue-500 hover:text-blue-700 text-sm font-medium btn-view-link" data-table="${table.id}" data-token="${table.qrToken || table.id}">Xem link</button>
             </td>
             <td class="py-4 px-6">
                 <span class="${table.status === 'Trống' ? 'bg-green-100 text-green-600' : 'bg-red-50 text-red-500'} px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">${table.status}</span>
             </td>
             <td class="py-4 px-6">
                 <div class="flex gap-2">
-                    <button class="btn-view-qr bg-[#2ECA6A] text-white p-2 rounded-lg hover:bg-green-600 shadow-sm transition-colors" data-table="${table.id}" title="Xem QR">
+                    <button class="btn-view-qr bg-[#2ECA6A] text-white p-2 rounded-lg hover:bg-green-600 shadow-sm transition-colors" data-table="${table.id}" data-token="${table.qrToken || table.id}" data-name="${table.name}" title="Xem QR">
                         ${managerIcons.qr}
                     </button>
                     <button class="btn-toggle-status bg-[#4285F4] text-white p-2 rounded-lg hover:bg-blue-600 shadow-sm transition-colors" data-table="${table.id}" title="Chuyển trạng thái">
@@ -475,7 +474,7 @@ function getManagerMenuContent(products) {
     const productCardsHTML = products.map(p => `
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col relative group">
             <div class="w-full h-40 bg-gray-100 rounded-lg mb-4 overflow-hidden relative">
-                <img src="${p.imageUrl ? 'http://localhost:8080' + p.imageUrl : 'https://via.placeholder.com/300?text=No+Image'}" alt="${p.name}" class="w-full h-full object-cover">
+                <img src="${p.imageUrl ? 'http://localhost:8080' + p.imageUrl : 'https://via.placeholder.com/300?text=No+Image'}" alt="${p.name}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300?text=Error'">
             </div>
 
             <div class="flex-1">
@@ -487,7 +486,7 @@ function getManagerMenuContent(products) {
 
             <!-- Nút tương tác ẩn hiện khi hover -->
             <div class="absolute inset-0 bg-white bg-opacity-90 flex flex-col justify-center items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
-                <button class="btn-edit-product w-3/4 bg-blue-500 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-600 transition-colors flex items-center justify-center gap-2" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-desc="${p.description || ''}" data-cat="${p.categoryId}" data-img="${p.imageUrl || ''}">
+                <button class="btn-edit-product w-3/4 bg-blue-500 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-blue-600 transition-colors flex items-center justify-center gap-2" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-desc="${p.description || ''}" data-cat="${p.category?.id || p.categoryId}" data-img="${p.imageUrl || ''}">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Chỉnh sửa
                 </button>
                 <button class="btn-delete-product w-3/4 bg-red-500 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-red-600 transition-colors flex items-center justify-center gap-2" data-id="${p.id}">
@@ -652,7 +651,11 @@ export function initManagerEvents() {
 
     // Xử lý Submit form thêm bàn mới
     if (addTableForm) {
-        addTableForm.addEventListener('submit', async (e) => {
+        // Hủy event cũ để tránh duplicate
+        const oldFormClone = addTableForm.cloneNode(true);
+        addTableForm.parentNode.replaceChild(oldFormClone, addTableForm);
+
+        oldFormClone.addEventListener('submit', async (e) => {
             e.preventDefault();
             const numInput = document.getElementById('newTableNumber').value;
 
@@ -671,7 +674,7 @@ export function initManagerEvents() {
 
                 if (response.ok) {
                     alert("Đã thêm bàn thành công!");
-                    toggleModal(addTableModal, addTableContent, false);
+                    toggleModal(document.getElementById('addTableModal'), document.getElementById('addTableContent'), false);
                     window.location.reload();
                 } else {
                     const error = await response.json();
@@ -737,11 +740,16 @@ export function initManagerEvents() {
             const qrImage = document.getElementById('qrImage');
             const qrModalTitle = document.getElementById('qrModalTitle');
 
+            // CẬP NHẬT Ở ĐÂY: Dùng data-token cho link thay vì tableId
+            const tableToken = btnViewQr.getAttribute('data-token');
+            const tableName = btnViewQr.getAttribute('data-name'); // Lấy tên bàn từ data-name (cần thêm vào HTML)
             const tableId = btnViewQr.getAttribute('data-table');
-            const tableUrl = `${orderDomain}${tableId}`;
+
+            const tableUrl = `${orderDomain}${tableToken}`;
 
             if(qrImage) qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tableUrl)}`;
-            if(qrModalTitle) qrModalTitle.textContent = `QR Bàn ${tableId}`;
+            // Nếu có tên bàn (khi bấm icon QR) thì hiện tên, nếu không (bấm link text) thì hiện ID
+            if(qrModalTitle) qrModalTitle.textContent = `QR ${tableName || 'Bàn ' + tableId}`;
 
             toggleModal(qrModal, qrContent, true);
         }
@@ -826,7 +834,7 @@ export function initManagerEvents() {
             }
 
         } else {
-            productForm.reset();
+            document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
             productPreview.src = 'https://via.placeholder.com/80';
             productImageUrlInput.value = '';
@@ -890,21 +898,25 @@ export function initManagerEvents() {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    document.getElementById('productImageUrl').value = data.imageUrl;
+                    document.getElementById('productImageUrl').value = data.imageUrl; // Lưu URL từ backend
+                    alert("Tải ảnh lên thành công!");
                 } else {
-                    alert('Lỗi tải ảnh lên máy chủ');
+                    throw new Error('Lỗi tải ảnh lên server');
                 }
             } catch (error) {
-                console.error('Lỗi upload ảnh:', error);
-                alert('Không thể kết nối đến máy chủ lưu trữ ảnh.');
+                console.error('Lỗi upload ảnh sản phẩm:', error);
+                alert('Không thể tải ảnh sản phẩm lên.');
+                productPreview.src = 'https://via.placeholder.com/80'; // Reset ảnh nếu lỗi
+                productImageUrlInput.value = '';
             }
         });
     }
 
     // --- Submit Form Thêm/Sửa Sản Phẩm ---
-    if (productForm) {
-        const oldFormClone = productForm.cloneNode(true);
-        productForm.parentNode.replaceChild(oldFormClone, productForm);
+    const realProductForm = document.getElementById('productForm');
+    if (realProductForm) {
+        const oldFormClone = realProductForm.cloneNode(true);
+        realProductForm.parentNode.replaceChild(oldFormClone, realProductForm);
 
         oldFormClone.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -919,7 +931,7 @@ export function initManagerEvents() {
                 name: productName,
                 price: productPrice,
                 description: productDescription,
-                category: { id: productCategory },
+                category: { id: productCategory }, // Gửi đối tượng Category với chỉ ID
                 imageUrl: productImageUrl
             };
 
@@ -936,12 +948,12 @@ export function initManagerEvents() {
                 if (response.ok) {
                     alert(`Đã ${productId ? 'cập nhật' : 'thêm'} món ăn thành công!`);
                     toggleModal(document.getElementById('productModal'), document.getElementById('productModalContent'), false);
-                    window.location.reload();
+                    window.location.reload(); // Tải lại trang để thấy thay đổi
                 } else {
                     alert(`Lỗi khi ${productId ? 'cập nhật' : 'thêm'} món ăn.`);
                 }
             } catch (error) {
-                console.error('Lỗi API:', error);
+                console.error('Lỗi API sản phẩm:', error);
                 alert('Không thể kết nối đến máy chủ.');
             }
         });
@@ -964,7 +976,7 @@ export function initManagerEvents() {
                         alert('Lỗi khi xóa món ăn.');
                     }
                 } catch (error) {
-                    console.error('Lỗi API:', error);
+                    console.error('Lỗi API xóa sản phẩm:', error);
                     alert('Không thể kết nối đến máy chủ.');
                 }
             }

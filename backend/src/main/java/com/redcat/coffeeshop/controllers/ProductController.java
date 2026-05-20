@@ -21,60 +21,68 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @Autowired
-    private CategoryRepository categoryRepository; // Cần để tìm Category theo ID
+    private CategoryRepository categoryRepository;
 
-    // Lấy tất cả sản phẩm
+    // Lấy tất cả sản phẩm hoặc lọc theo categoryId
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+    public ResponseEntity<List<Product>> getProducts(@RequestParam(required = false) Long categoryId) {
+        List<Product> products;
+        if (categoryId != null) {
+            products = productRepository.findByCategoryId(categoryId);
+        } else {
+            products = productRepository.findAll();
+        }
         return ResponseEntity.ok(products);
     }
 
-    // Thêm sản phẩm mới
+    // HÀM THÊM MÓN MỚI
     @PostMapping
-    public ResponseEntity<?> createProduct(@RequestBody Product product) {
+    public ResponseEntity<?> createProduct(@RequestBody Product newProduct) {
+        // newProduct đã tự động chứa các trường name, price, description, category, imageUrl từ Frontend gửi lên
         // Đảm bảo category được set đúng cách
-        if (product.getCategory() != null && product.getCategory().getId() != null) {
-            Optional<Category> categoryOpt = categoryRepository.findById(product.getCategory().getId());
+        if (newProduct.getCategory() != null && newProduct.getCategory().getId() != null) {
+            Optional<Category> categoryOpt = categoryRepository.findById(newProduct.getCategory().getId());
             if (categoryOpt.isPresent()) {
-                product.setCategory(categoryOpt.get());
+                newProduct.setCategory(categoryOpt.get());
             } else {
                 return ResponseEntity.badRequest().body(Map.of("message", "Category không tồn tại"));
             }
         } else {
             return ResponseEntity.badRequest().body(Map.of("message", "Category là bắt buộc"));
         }
-
-        Product savedProduct = productRepository.save(product);
-        return ResponseEntity.ok(savedProduct);
+        productRepository.save(newProduct);
+        return ResponseEntity.ok(Map.of("message", "Đã thêm món mới"));
     }
 
-    // Cập nhật sản phẩm
+    // HÀM CHỈNH SỬA MÓN
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
         Optional<Product> productOpt = productRepository.findById(id);
-        if (!productOpt.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Product existingProduct = productOpt.get();
-        existingProduct.setName(productDetails.getName());
-        existingProduct.setDescription(productDetails.getDescription());
-        existingProduct.setPrice(productDetails.getPrice());
-        existingProduct.setImageUrl(productDetails.getImageUrl());
-
-        // Cập nhật category
-        if (productDetails.getCategory() != null && productDetails.getCategory().getId() != null) {
-            Optional<Category> categoryOpt = categoryRepository.findById(productDetails.getCategory().getId());
-            if (categoryOpt.isPresent()) {
-                existingProduct.setCategory(categoryOpt.get());
-            } else {
-                return ResponseEntity.badRequest().body(Map.of("message", "Category không tồn tại"));
+        if (productOpt.isPresent()) {
+            Product existingProduct = productOpt.get();
+            existingProduct.setName(productDetails.getName());
+            existingProduct.setPrice(productDetails.getPrice());
+            existingProduct.setDescription(productDetails.getDescription());
+            
+            // Cập nhật category
+            if (productDetails.getCategory() != null && productDetails.getCategory().getId() != null) {
+                Optional<Category> categoryOpt = categoryRepository.findById(productDetails.getCategory().getId());
+                if (categoryOpt.isPresent()) {
+                    existingProduct.setCategory(categoryOpt.get());
+                } else {
+                    return ResponseEntity.badRequest().body(Map.of("message", "Category không tồn tại"));
+                }
             }
-        }
+            
+            // QUAN TRỌNG: Cập nhật ảnh mới nếu người dùng có đổi ảnh
+            if (productDetails.getImageUrl() != null && !productDetails.getImageUrl().isEmpty()) {
+                existingProduct.setImageUrl(productDetails.getImageUrl());
+            }
 
-        Product updatedProduct = productRepository.save(existingProduct);
-        return ResponseEntity.ok(updatedProduct);
+            productRepository.save(existingProduct);
+            return ResponseEntity.ok(Map.of("message", "Cập nhật thành công"));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // Xóa sản phẩm

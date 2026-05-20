@@ -3,6 +3,13 @@
 // ==========================================
 let cart = JSON.parse(localStorage.getItem('redCatCart')) || {};
 
+// Lấy thông tin bàn từ URL nếu có (khách quét QR)
+const urlParams = new URLSearchParams(window.location.search);
+const tableTokenFromUrl = urlParams.get('table');
+if (tableTokenFromUrl) {
+    localStorage.setItem('customerTableToken', tableTokenFromUrl);
+}
+
 // ==========================================
 // 2. LAYOUT CHÍNH (MOBILE FRAME)
 // ==========================================
@@ -53,53 +60,56 @@ function getHomeContent() {
             <section>
                 <h2 class="font-bold text-[15px] mb-4 tracking-wide uppercase">Menu</h2>
                 <div class="flex flex-col gap-4">
-                    <a href="#/customer/menu/coffee" class="bg-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-50 active:scale-95 transition-transform">
+                    <a href="#/customer/menu/1" class="bg-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-50 active:scale-95 transition-transform">
                         <i class="fa-solid fa-mug-hot text-3xl text-[#E33539]"></i>
                         <span class="font-semibold text-[15px]">Cà phê</span>
                     </a>
-                    <a href="#/customer/menu/tea" class="bg-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-50 active:scale-95 transition-transform">
+                    <a href="#/customer/menu/2" class="bg-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-50 active:scale-95 transition-transform">
                         <i class="fa-solid fa-leaf text-3xl text-[#E33539]"></i>
                         <span class="font-semibold text-[15px]">Trà</span>
+                    </a>
+                    <a href="#/customer/menu/3" class="bg-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-50 active:scale-95 transition-transform">
+                        <i class="fa-solid fa-cookie-bite text-3xl text-[#E33539]"></i>
+                        <span class="font-semibold text-[15px]">Bánh</span>
                     </a>
                 </div>
             </section>
 
             <div class="flex justify-center mt-10 opacity-90">
-                <img src="/assets/red_cat_mascot.png" alt="Mascot" class="w-32 h-auto object-contain">
+                <img src="/assets/red_cat_mascot.png" alt="Mascot" class="w-32 h-auto object-contain" onerror="this.src='https://via.placeholder.com/150'">
             </div>
         </div>
     `;
 }
 
 // --- TRANG MENU SẢN PHẨM ---
-function getMenuContent(category) {
-    // Dữ liệu giả lập (Sau này lấy từ API GET /api/products?category=...)
-    let products = [];
-    if (category === 'coffee') {
-        products = [
-            { id: 1, name: 'Đen nóng', price: 25000, img: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=200' },
-            { id: 2, name: 'Bạc xỉu', price: 30000, img: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200' },
-            { id: 3, name: 'Cappuccino', price: 40000, img: 'https://images.unsplash.com/photo-1572288658217-470f7110d1e2?w=200' }
-        ];
-    } else {
-        products = [
-            { id: 4, name: 'Trà nhài', price: 25000, img: 'https://images.pexels.com/photos/7138780/pexels-photo-7138780.jpeg?w=200' },
-            { id: 5, name: 'Trà đào', price: 35000, img: 'https://images.pexels.com/photos/33573171/pexels-photo-33573171.jpeg?w=200' }
-        ];
+function getMenuContent(products, categoryId) {
+    if (!products || products.length === 0) {
+        return `
+            <div class="p-5 text-center mt-10">
+                <p class="text-gray-500">Chưa có món nào trong danh mục này.</p>
+            </div>
+        `;
     }
 
     const productHTML = products.map(p => {
         const qty = cart[p.name] ? cart[p.name].quantity : 0;
+        const imgUrl = p.imageUrl ? `http://localhost:8080${p.imageUrl}` : 'https://via.placeholder.com/200';
         return `
             <div class="flex bg-white rounded-2xl p-3 mb-4 shadow-[0_4px_15px_rgba(0,0,0,0.04)] border border-gray-50 product-item">
-                <img src="${p.img}" class="w-[90px] h-[90px] object-cover rounded-xl shrink-0">
+                <img src="${imgUrl}" class="w-[90px] h-[90px] object-cover rounded-xl shrink-0" onerror="this.src='https://via.placeholder.com/90'">
                 <div class="ml-4 flex-1 flex flex-col justify-between">
-                    <h3 class="font-bold text-base text-gray-800">${p.name}</h3>
-                    <p class="font-bold text-[#E33539] text-base">${p.price.toLocaleString('vi-VN')}đ</p>
-                    <div class="flex items-center bg-gray-100 p-1 rounded-full w-max gap-3 mt-2">
-                        <button class="w-7 h-7 rounded-full bg-white text-[#E33539] shadow-sm flex items-center justify-center btn-minus" data-name="${p.name}" data-price="${p.price}" data-img="${p.img}"><i class="fa-solid fa-minus"></i></button>
-                        <span class="font-bold text-sm min-w-[16px] text-center qty-display">${qty}</span>
-                        <button class="w-7 h-7 rounded-full bg-white text-[#E33539] shadow-sm flex items-center justify-center btn-plus" data-name="${p.name}" data-price="${p.price}" data-img="${p.img}"><i class="fa-solid fa-plus"></i></button>
+                    <div>
+                        <h3 class="font-bold text-base text-gray-800">${p.name}</h3>
+                        <p class="text-[10px] text-gray-500 line-clamp-2">${p.description || ''}</p>
+                    </div>
+                    <div class="flex justify-between items-end mt-2">
+                        <p class="font-bold text-[#E33539] text-base">${p.price.toLocaleString('vi-VN')}đ</p>
+                        <div class="flex items-center bg-gray-100 p-1 rounded-full w-max gap-3">
+                            <button class="w-7 h-7 rounded-full bg-white text-[#E33539] shadow-sm flex items-center justify-center btn-minus" data-name="${p.name}" data-price="${p.price}" data-img="${imgUrl}"><i class="fa-solid fa-minus text-xs"></i></button>
+                            <span class="font-bold text-sm min-w-[16px] text-center qty-display">${qty}</span>
+                            <button class="w-7 h-7 rounded-full bg-white text-[#E33539] shadow-sm flex items-center justify-center btn-plus" data-name="${p.name}" data-price="${p.price}" data-img="${imgUrl}"><i class="fa-solid fa-plus text-xs"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,16 +144,17 @@ function getCartContent() {
     const cartHTML = Object.keys(cart).map(name => {
         const item = cart[name];
         return `
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
-                <div class="flex justify-between items-center mb-3">
-                    <div>
-                        <h3 class="font-bold text-base text-gray-900">${name}</h3>
-                        <p class="text-sm text-gray-500">${item.price.toLocaleString('vi-VN')}đ</p>
-                    </div>
-                    <div class="flex items-center bg-gray-100 p-1 rounded-full gap-3">
-                        <button class="w-7 h-7 rounded-full bg-white text-[#E33539] shadow-sm btn-minus" data-name="${name}" data-price="${item.price}"><i class="fa-solid fa-minus text-xs"></i></button>
-                        <span class="font-bold text-sm min-w-[16px] text-center">${item.quantity}</span>
-                        <button class="w-7 h-7 rounded-full bg-white text-[#E33539] shadow-sm btn-plus" data-name="${name}" data-price="${item.price}"><i class="fa-solid fa-plus text-xs"></i></button>
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4 flex gap-3">
+                ${item.img ? `<img src="${item.img}" class="w-16 h-16 rounded-xl object-cover shrink-0" onerror="this.src='https://via.placeholder.com/64'">` : ''}
+                <div class="flex-1 flex flex-col justify-between">
+                    <h3 class="font-bold text-base text-gray-900">${name}</h3>
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-sm font-bold text-[#E33539]">${item.price.toLocaleString('vi-VN')}đ</p>
+                        <div class="flex items-center bg-gray-100 p-1 rounded-full gap-3">
+                            <button class="w-7 h-7 rounded-full bg-white text-[#E33539] shadow-sm btn-minus flex justify-center items-center" data-name="${name}" data-price="${item.price}" data-img="${item.img || ''}"><i class="fa-solid fa-minus text-xs"></i></button>
+                            <span class="font-bold text-sm min-w-[16px] text-center">${item.quantity}</span>
+                            <button class="w-7 h-7 rounded-full bg-white text-[#E33539] shadow-sm btn-plus flex justify-center items-center" data-name="${name}" data-price="${item.price}" data-img="${item.img || ''}"><i class="fa-solid fa-plus text-xs"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -151,7 +162,7 @@ function getCartContent() {
     }).join('');
 
     return `
-        <div class="p-5">
+        <div class="p-5 pb-32">
             <h2 class="font-bold text-base mb-4">Giỏ hàng của bạn</h2>
             ${cartHTML}
         </div>
@@ -165,7 +176,7 @@ function getCartContent() {
                 <span class="font-semibold text-gray-800">Tổng Tiền:</span>
                 <span class="font-extrabold text-xl text-[#E33539]" id="cartTotalPrice">0đ</span>
             </div>
-            <button class="w-full bg-[#E33539] text-white p-4 rounded-xl font-bold shadow-[0_8px_15px_rgba(227,53,57,0.25)]" onclick="window.location.hash='#/customer/checkout'">
+            <button class="w-full bg-[#E33539] text-white p-4 rounded-xl font-bold shadow-[0_8px_15px_rgba(227,53,57,0.25)] transition-transform active:scale-95" onclick="window.location.hash='#/customer/checkout'">
                 Đặt món ngay
             </button>
         </div>
@@ -174,6 +185,29 @@ function getCartContent() {
 
 // --- TRANG CHECKOUT (ĐẶT HÀNG) ---
 function getCheckoutContent() {
+    // Ẩn field chọn bàn, thay vào đó hiển thị bàn đang ngồi (nếu có từ token)
+    const tableToken = localStorage.getItem('customerTableToken');
+    let tableInfoHTML = '';
+
+    if (tableToken) {
+        tableInfoHTML = `
+            <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2 text-gray-700">
+                    <i class="fa-solid fa-chair text-[#E33539]"></i>
+                    <span class="font-semibold text-sm">Đang ngồi tại:</span>
+                </div>
+                <span class="font-bold text-[#E33539]" id="displayTableInfo">Đang xác định...</span>
+            </div>
+        `;
+    } else {
+        tableInfoHTML = `
+            <div class="bg-yellow-50 border border-yellow-200 p-3.5 rounded-xl flex items-center gap-2 mb-4 text-yellow-700 text-sm">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Bạn chưa quét mã QR bàn. Đơn hàng sẽ được ghi nhận là Khách lẻ.</span>
+            </div>
+        `;
+    }
+
     return `
         <div class="p-5">
             <h2 class="font-bold text-lg mb-5 flex items-center gap-2 text-gray-800"><i class="fa-solid fa-user-check text-[#E33539]"></i> Thông tin khách hàng</h2>
@@ -186,10 +220,9 @@ function getCheckoutContent() {
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Số điện thoại <span class="text-red-500">*</span></label>
                     <input type="tel" id="custPhone" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#E33539] focus:bg-white transition-colors" placeholder="Số liên hệ...">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Số bàn <span class="text-red-500">*</span></label>
-                    <input type="text" id="custTable" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#E33539] focus:bg-white transition-colors" placeholder="Ví dụ: Bàn 5">
-                </div>
+
+                ${tableInfoHTML}
+                <input type="hidden" id="custTableId" value="">
 
                 <div class="mt-8 border border-dashed border-gray-300 p-4 rounded-xl flex justify-between items-center bg-white">
                     <span class="font-semibold text-gray-600">Thanh toán đợt này:</span>
@@ -199,7 +232,7 @@ function getCheckoutContent() {
         </div>
 
         <div class="fixed bottom-0 w-full max-w-[414px] bg-white p-5 rounded-t-3xl shadow-[0_-8px_25px_rgba(0,0,0,0.06)] z-50">
-            <button type="submit" form="customerOrderForm" class="w-full bg-[#E33539] text-white p-4 rounded-xl font-bold shadow-[0_8px_15px_rgba(227,53,57,0.25)]">
+            <button type="submit" form="customerOrderForm" class="w-full bg-[#E33539] text-white p-4 rounded-xl font-bold shadow-[0_8px_15px_rgba(227,53,57,0.25)] transition-transform active:scale-95">
                 Xác nhận & Gửi đơn
             </button>
         </div>
@@ -234,6 +267,24 @@ function updateCartState() {
 export function initCustomerEvents() {
     updateCartState();
 
+    // Tải thông tin bàn nếu có token
+    const tableToken = localStorage.getItem('customerTableToken');
+    if (tableToken) {
+        fetch(`http://localhost:8080/api/tables/by-qr-token/${tableToken}`)
+            .then(res => res.json())
+            .then(table => {
+                const displayTableInfo = document.getElementById('displayTableInfo');
+                const custTableId = document.getElementById('custTableId');
+                if (displayTableInfo) displayTableInfo.textContent = table.name;
+                if (custTableId) custTableId.value = table.id;
+            })
+            .catch(err => {
+                console.error("Lỗi tải thông tin bàn:", err);
+                const displayTableInfo = document.getElementById('displayTableInfo');
+                if (displayTableInfo) displayTableInfo.textContent = "Không xác định được bàn";
+            });
+    }
+
     // Loại bỏ tất cả event listeners trước đó để tránh duplicate event
     const oldClickHandler = document._customerClickHandler;
     if (oldClickHandler) {
@@ -248,7 +299,8 @@ export function initCustomerEvents() {
         if (btnPlus) {
             const name = btnPlus.getAttribute('data-name');
             const price = parseInt(btnPlus.getAttribute('data-price'));
-            if (!cart[name]) cart[name] = { price, quantity: 0 };
+            const img = btnPlus.getAttribute('data-img');
+            if (!cart[name]) cart[name] = { price, quantity: 0, img };
             cart[name].quantity++;
             updateCartState();
 
@@ -306,30 +358,43 @@ export function initCustomerEvents() {
 
     // Loại bỏ listener cũ nếu có
     if(orderForm) {
-        // Thay vì gỡ listener cũ (khó làm với anonymous function),
-        // ta gán sự kiện theo cách onclick để luôn chỉ có 1 listener
         orderForm.onsubmit = (e) => {
             e.preventDefault();
             const customerName = document.getElementById('custName').value;
-            const tableNo = document.getElementById('custTable').value;
+            const tableId = document.getElementById('custTableId').value;
 
             if (Object.keys(cart).length === 0) {
                 alert("Giỏ hàng đang trống!"); return;
             }
 
-            // Dữ liệu chuẩn bị gửi Backend
-            const orderPayload = {
-                tableName: tableNo,
-                customerName: customerName,
-                items: Object.keys(cart).map(name => ({
+            // Tính tổng tiền
+            let totalAmount = 0;
+            const items = Object.keys(cart).map(name => {
+                totalAmount += cart[name].price * cart[name].quantity;
+                return {
                     productName: name,
                     quantity: cart[name].quantity,
-                    unitPrice: cart[name].price
-                }))
+                    unitPrice: cart[name].price,
+                    totalPrice: cart[name].price * cart[name].quantity
+                };
+            });
+
+            // Dữ liệu chuẩn bị gửi Backend theo đúng cấu trúc của Order.java
+            const orderPayload = {
+                id: 'ORD-' + Date.now().toString().substring(5), // Tạo ID giả
+                serverName: customerName, // Dùng tạm serverName làm tên khách
+                totalAmount: totalAmount,
+                status: "Chờ xử lý",
+                items: items
             };
 
+            // Nếu có tableId, nhét vào payload
+            if (tableId) {
+                orderPayload.table = { id: parseInt(tableId) };
+            }
+
             // GỌI API ĐỂ LƯU VÀO DB VỚI TRẠNG THÁI "CHỜ XỬ LÝ"
-            fetch('http://localhost:8080/api/orders', {
+            fetch('http://localhost:8080/api/warehouse/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderPayload)
@@ -357,6 +422,11 @@ export function initCustomerEvents() {
 
 // CÁC HÀM XUẤT CHO ROUTER
 export function renderCustomerHome() { return getCustomerLayout(getHomeContent(), true, "Red Cat Coffee", false); }
-export function renderCustomerMenu(category) { return getCustomerLayout(getMenuContent(category), true, category === 'coffee' ? 'Cà Phê' : 'Trà', "#/customer"); }
+
+export function renderCustomerMenu(products, categoryId) {
+    const categoryName = categoryId == 1 ? 'Cà Phê' : (categoryId == 2 ? 'Trà' : 'Đồ ăn vặt');
+    return getCustomerLayout(getMenuContent(products, categoryId), true, categoryName, "#/customer");
+}
+
 export function renderCustomerCart() { return getCustomerLayout(getCartContent(), true, "Giỏ hàng", "#/customer"); }
 export function renderCustomerCheckout() { return getCustomerLayout(getCheckoutContent(), true, "Thanh toán", "#/customer/cart"); }

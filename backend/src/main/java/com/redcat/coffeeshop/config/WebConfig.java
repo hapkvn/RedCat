@@ -5,6 +5,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.nio.file.Paths;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
@@ -16,15 +18,17 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*");
     }
 
-    // Cấu hình để Spring Boot phục vụ file tĩnh từ thư mục uploads/ (ngang hàng với project root)
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Ánh xạ link web /uploads/** vào thư mục uploads/ nằm ngang hàng với thư mục backend
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:./uploads/");
+        String uploadDir = Paths.get(System.getProperty("user.dir"), "uploads").toString();
         
-        // Giữ lại cấu hình cho assets nếu frontend vẫn cần truy cập trực tiếp
+        // Cấu hình để phục vụ file từ thư mục uploads
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + uploadDir + "/");
+
+        // Cấu hình để phục vụ file từ thư mục assets của frontend
+        String assetsDir = Paths.get(System.getProperty("user.dir"), "frontend", "assets").toString();
         registry.addResourceHandler("/assets/**")
-                .addResourceLocations("file:../frontend/assets/");
+                .addResourceLocations("file:" + assetsDir + "/");
     }
 }

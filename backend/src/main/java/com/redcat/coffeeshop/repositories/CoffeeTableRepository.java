@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface CoffeeTableRepository extends JpaRepository<CoffeeTable, Long> {
     Optional<CoffeeTable> findByName(String name);
+    Optional<CoffeeTable> findByQrToken(String qrToken);
 }

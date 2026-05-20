@@ -26,6 +26,16 @@ public class TableController {
         return ResponseEntity.ok(tables);
     }
 
+    // Lấy thông tin bàn bằng qr_token
+    @GetMapping("/by-qr-token/{qrToken}")
+    public ResponseEntity<?> getTableByQrToken(@PathVariable String qrToken) {
+        Optional<CoffeeTable> tableOpt = tableRepository.findByQrToken(qrToken);
+        if (tableOpt.isPresent()) {
+            return ResponseEntity.ok(tableOpt.get());
+        }
+        return ResponseEntity.status(404).body(Map.of("message", "Không tìm thấy bàn với QR token này"));
+    }
+
     // Thêm bàn mới
     @PostMapping
     public ResponseEntity<?> createTable(@RequestBody CoffeeTable newTable) {
