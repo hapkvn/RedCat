@@ -10,4 +10,5 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     // Thêm phương thức này để tìm sản phẩm theo ID của Category
     List<Product> findByCategoryId(Long categoryId);
+    Product findByName(String name);
 }

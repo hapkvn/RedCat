@@ -38,7 +38,6 @@ public class ProductController {
     // HÀM THÊM MÓN MỚI
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody Product newProduct) {
-        // newProduct đã tự động chứa các trường name, price, description, category, imageUrl từ Frontend gửi lên
         // Đảm bảo category được set đúng cách
         if (newProduct.getCategory() != null && newProduct.getCategory().getId() != null) {
             Optional<Category> categoryOpt = categoryRepository.findById(newProduct.getCategory().getId());
@@ -50,6 +49,13 @@ public class ProductController {
         } else {
             return ResponseEntity.badRequest().body(Map.of("message", "Category là bắt buộc"));
         }
+
+        // BỔ SUNG: Liên kết Công thức (Nguyên liệu) vào Món ăn trước khi lưu
+        if (newProduct.getProductMaterials() != null) {
+            // Gọi hàm setter đặc biệt trong Product.java để nối Món ăn và Nguyên liệu lại với nhau
+            newProduct.setProductMaterials(newProduct.getProductMaterials());
+        }
+
         productRepository.save(newProduct);
         return ResponseEntity.ok(Map.of("message", "Đã thêm món mới"));
     }
@@ -63,7 +69,7 @@ public class ProductController {
             existingProduct.setName(productDetails.getName());
             existingProduct.setPrice(productDetails.getPrice());
             existingProduct.setDescription(productDetails.getDescription());
-            
+
             // Cập nhật category
             if (productDetails.getCategory() != null && productDetails.getCategory().getId() != null) {
                 Optional<Category> categoryOpt = categoryRepository.findById(productDetails.getCategory().getId());
@@ -73,10 +79,16 @@ public class ProductController {
                     return ResponseEntity.badRequest().body(Map.of("message", "Category không tồn tại"));
                 }
             }
-            
+
             // QUAN TRỌNG: Cập nhật ảnh mới nếu người dùng có đổi ảnh
             if (productDetails.getImageUrl() != null && !productDetails.getImageUrl().isEmpty()) {
                 existingProduct.setImageUrl(productDetails.getImageUrl());
+            }
+
+            // BỔ SUNG: Cập nhật lại danh sách nguyên liệu (Công thức)
+            if (productDetails.getProductMaterials() != null) {
+                // Hàm này sẽ tự động xóa nguyên liệu cũ và lưu nguyên liệu mới vào
+                existingProduct.setProductMaterials(productDetails.getProductMaterials());
             }
 
             productRepository.save(existingProduct);

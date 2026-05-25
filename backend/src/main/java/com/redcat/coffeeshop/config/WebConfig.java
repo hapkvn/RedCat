@@ -20,15 +20,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String uploadDir = Paths.get(System.getProperty("user.dir"), "uploads").toString();
-        
-        // Cấu hình để phục vụ file từ thư mục uploads
+        // Dùng toUri().toString() để tạo đường dẫn file:///... hợp chuẩn Web
+        String uploadPath = Paths.get(System.getProperty("user.dir"), "uploads").toUri().toString();
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadDir + "/");
+                .addResourceLocations(uploadPath);
 
-        // Cấu hình để phục vụ file từ thư mục assets của frontend
-        String assetsDir = Paths.get(System.getProperty("user.dir"), "frontend", "assets").toString();
+        String assetsPath = Paths.get(System.getProperty("user.dir"), "frontend", "assets").toUri().toString();
         registry.addResourceHandler("/assets/**")
-                .addResourceLocations("file:" + assetsDir + "/");
+                .addResourceLocations(assetsPath);
     }
 }

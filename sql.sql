@@ -184,5 +184,6 @@ INSERT INTO suppliers (name, contact_info) VALUES
 ('Dairy Farm', '0987654321');
 
 INSERT INTO materials (id, name, category_id, supplier_id, unit, stock_quantity, min_stock_level, unit_price) VALUES 
-('NL001', 'Cà phê hạt xay (Robusta)', 3, 1, 'kg', 15, 5, 150000),
+('NL003', 'Cà phê hạdt xay (Robusta)', 3, 1, 'kg', 15, 5, 150000),
 ('NL002', 'Sữa đặc Ngôi Sao', 3, 2, 'lon', 4, 5, 20000);
+select *from products

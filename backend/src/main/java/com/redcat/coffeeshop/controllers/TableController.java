@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tables")
@@ -50,7 +49,11 @@ public class TableController {
         }
 
         newTable.setStatus("Trống");
-        newTable.setQrToken(UUID.randomUUID().toString().substring(0, 8)); // Tạo QR token ngẫu nhiên
+
+        // FIX BUG 1: Lấy đúng số bàn làm mã QR thay vì dùng UUID ngẫu nhiên
+        String tokenNumber = newTable.getName().replace("Bàn ", "").trim();
+        newTable.setQrToken(tokenNumber);
+
         CoffeeTable savedTable = tableRepository.save(newTable);
         return ResponseEntity.ok(savedTable);
     }
@@ -66,7 +69,7 @@ public class TableController {
         CoffeeTable table = tableOpt.get();
         String currentStatus = table.getStatus();
         String newStatus = "Trống".equals(currentStatus) ? "Đang sử dụng" : "Trống"; // Toggle trạng thái
-        
+
         // Nếu client gửi status cụ thể, dùng status đó
         if (statusData != null && statusData.containsKey("status")) {
             newStatus = statusData.get("status");
@@ -86,15 +89,19 @@ public class TableController {
         }
 
         tableRepository.deleteById(id);
-        
-        // Cập nhật lại tên các bàn sau khi xóa để không bị trống số
+
+        // FIX BUG 2: Cập nhật lại TÊN và MÃ QR của các bàn sau khi xóa để dồn số khít lại
         List<CoffeeTable> remainingTables = tableRepository.findAll();
         for (int i = 0; i < remainingTables.size(); i++) {
             CoffeeTable table = remainingTables.get(i);
-            table.setName("Bàn " + (i + 1));
+
+            String correctNumber = String.valueOf(i + 1);
+            table.setName("Bàn " + correctNumber);
+            table.setQrToken(correctNumber); // Đảm bảo Mã QR cũng được dồn theo
+
             tableRepository.save(table);
         }
 
-        return ResponseEntity.ok(Map.of("message", "Đã xóa bàn và cập nhật lại số bàn"));
+        return ResponseEntity.ok(Map.of("message", "Đã xóa bàn và dồn số bàn thành công"));
     }
 }
